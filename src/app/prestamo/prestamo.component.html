@@ -1,0 +1,323 @@
+<app-header-app></app-header-app>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+<section class="container-app">
+  <!--contenido informativo antes de la lista de usuarios -->
+
+      <div class="d-flex w-100 justify-content-between breadcrumb">
+          <ol class="breadcrumb">
+              <li class="breadcrumb-item" aria-current="page">MENU</li>
+              <li class="breadcrumb-item active" aria-current="page">Préstamos</li>
+          </ol>
+          <button type="button" class="btn btn-sm btn-primary" *ngIf="(rolIdLogueado == 1 || rolIdLogueado == 2) && this.clienteEncontrado" data-toggle="modal" data-target="#modalEdicion" (click)="crear()">Nuevo Préstamo</button>
+      </div>
+      <div class="grid" style="padding: 20px;">
+        <div class="jumbotron jumbotron-fluid" style="padding: 1rem;">
+          <div class="container">
+            <!--<h1 class="display-5">Búsqueda</h1>-->
+            <div class="row">
+              <div class="col-xs-12 col-md-5">
+                <legend>Búsqueda, ingresa el rut y dígito verificador y luego presiona el botón Buscar</legend>
+                <div class="form-group col-xs-12" style="display: flex;">
+                  <label for="rutFormLabel" class="col-md-2 col-form-label">Rut Cliente</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="rutFormLabel" placeholder="Rut" name="rut" [(ngModel)]="rutBuscar">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" class="form-control" id="dvFormLabel" placeholder="Dv" name="dv" [(ngModel)]="dvBuscar">
+                  </div>
+                </div>
+                <div class="col-xs-12 text-right">
+                  <button type="button" class="btn btn-secondary" (click)="limpiarGrilla()" style="margin-right: 10px;">Limpiar</button>
+                  <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
+                </div>
+              </div>
+              <div class="col-xs-12 col-md-7">
+                <!-- info cliente -->
+                <div class="form-row" *ngIf="this.clienteEncontrado">
+                  <legend>Información del Cliente</legend>
+                  <div class="form-group col-xs-12 col-md-4">
+                    <label for="inputEmail4">Nombre</label>
+                    <input type="text" class="form-control" id="inputEmail4" disabled value="{{this.clienteEncontrado.NomClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-3">
+                    <label for="inputEmail5">Giro</label>
+                    <input type="text" class="form-control" id="inputEmail5" disabled value="{{this.clienteEncontrado.GirClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-3">
+                    <label for="inputEmail6">Correo</label>
+                    <input type="text" class="form-control" id="inputEmail6" disabled value="{{this.clienteEncontrado.CorreoClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-2">
+                    <label for="inputEmail7">Teléfono</label>
+                    <input type="text" class="form-control" id="inputEmail7" disabled value="{{this.clienteEncontrado.TelClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-3">
+                    <label for="inputEmail8">Ciudad</label>
+                    <input type="text" class="form-control" id="inputEmail8" disabled value="{{this.clienteEncontrado.CiuClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-3">
+                    <label for="inputEmail9">Comuna</label>
+                    <input type="text" class="form-control" id="inputEmail9" disabled value="{{this.clienteEncontrado.ComClient}}">
+                  </div>
+                  <div class="form-group col-xs-12 col-md-6">
+                    <label for="inputEmail10">Dirección</label>
+                    <input type="text" class="form-control" id="inputEmail10" disabled value="{{this.clienteEncontrado.DirClient}}">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+        <ul class="nav nav-tabs" id="myTab">
+          <li class="nav-item">
+            <a class="nav-link active"  id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Listado Préstamos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Listado Consolidado</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent" style="margin:18px;">
+          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <!--tabla de resultados -->
+            <table id="tabla1" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover" style="width:100%">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre Producto</th>
+                  <th>Factura</th>
+                  <th>Fecha préstamo</th>
+                  <th>Devolución</th>
+                  <th>Estado</th>
+                  <th>Serie</th>
+                  <th>Observaciones</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pres of prestamos">
+                  <td>{{ pres.Id }}</td>
+                  <td>{{ pres.Nombre }}</td>
+                  <td>{{ pres.NroFactura }}</td>
+                  <td>{{ pres.FechaPrestamo }}</td>
+                  <td>{{ pres.FechaDevolucion }}</td>
+                  <td>{{ pres.EstadoStr }}</td>
+                  <td>{{ pres.NroSerie }}</td>
+                  <td>{{ pres.Observaciones }}</td>
+                  <td>
+                    <i *ngIf="pres.EsLLeno == 0" class="fas fa-battery-empty"></i>
+                    <i *ngIf="pres.EsLLeno == 1" class="fas fa-battery-full"></i>
+                  </td>
+                  <td>
+                    <button *ngIf="pres.Id == 0" type="button" class="btn btn-link" (click)="quitarPrestamoGuardar(pres.Indice)">Quitar</button>
+                    <button *ngIf="pres.Id > 0 && pres.Estado == 0" type="button" data-toggle="modal" data-target="#exampleModalCenterD" class="btn btn-link" (click)="abrirModalPrestamoDevolver(pres)">Devolver</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <table #table1 mat-table [dataSource]="this.consolidado" class="mat-elevation-z8" style="width:100%">
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="NombreProducto">
+                <th mat-header-cell *matHeaderCellDef> Producto </th>
+                <td mat-cell *matCellDef="let element"> 
+                  {{element.NombreProducto}}
+                </td>
+                <td mat-footer-cell *matFooterCellDef></td>
+              </ng-container>
+            
+              <!-- Weight Column -->
+              <ng-container matColumnDef="Serie">
+                <th mat-header-cell *matHeaderCellDef> Series </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <ul class="list-group list-group-flush" style="border-left: rgba(0,0,0,0.125);
+                  border-left-style: solid;
+                  border-left-width: 1px;
+                  border-right: rgba(0,0,0,0.125);
+                  border-right-style: solid;
+                  border-right-width: 1px;">
+                    <li class="list-group-item" *ngFor="let serie of element.Serie">
+                      <span>Nro Serie: {{serie.NroSerie}}</span>
+                      <span *ngIf="serie.Observaciones">,&nbsp;Observaciones: {{serie.Observaciones}}</span>
+                    </li>
+                  </ul> 
+                </td>
+                <td mat-footer-cell *matFooterCellDef style="text-align: right; font-weight: bold;"> Total Envases </td>
+              </ng-container>
+
+              <!-- Weight Column -->
+              <ng-container matColumnDef="Capacidad">
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Capacidad </th>
+                <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.Capacidad}} </td>
+                <td mat-footer-cell *matFooterCellDef></td>
+              </ng-container>
+            
+              <!-- Symbol Column -->
+              <ng-container matColumnDef="Llenos">
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Llenos </th>
+                <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.Llenos}} </td>
+                <td mat-footer-cell *matFooterCellDef style="text-align: center; font-weight: bold; font-size: 14px;">{{getTotalLlenos()}}</td>
+              </ng-container>
+
+              <!-- Symbol Column -->
+              <ng-container matColumnDef="Vacios">
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Vacios </th>
+                <td mat-cell *matCellDef="let element" style="text-align: center;"> {{element.Vacios}} </td>
+                <td mat-footer-cell *matFooterCellDef style="text-align: center; font-weight: bold; font-size: 14px;">{{getTotaVacios()}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: false"></tr>
+            </table>
+
+          </div>
+        </div>
+
+
+      </div>
+
+</section>
+<!-- modal devolver -->
+<div class="modal fade" id="exampleModalCenterD" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 50%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Devolver</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- contenido del modal devolver -->
+                <form [formGroup]="formaDevolver">
+                    <div class="form-row mb-3">
+                        <!-- CODIGO DETALLE -->
+                        <div class="input-group-md col-md-7">
+                            <label for="inputCodigoDevolver">Código</label>
+                            <input class="form-control" id="inputCodigoDevolver" formControlName="nuevoCodigoDevolver" />
+                        </div>
+                        <!-- FECHA -->
+                        <div class="input-group-md col-md-4">
+                            <label for="inputFechaDevolver">Fecha</label>
+                            <input class="form-control" id="inputFechaDevolver" formControlName="nuevoFechaDevolver" />
+                        </div>
+                        <!-- lleno -->
+                        <div class="input-group-md col-md-2">
+                            <label for="selectMedida">Estado</label>
+                            <select class="form-control" id="selectLlenoDevolver" formControlName="nuevoLlenoDevolver">
+                                <option value="0">Vacio</option>
+                                <option value="1">Lleno</option>
+                            </select>
+                        </div>
+                        <!-- OBSERVACIONES -->
+                        <div class="input-group-md col-md-10">
+                            <label for="inputObservacionesDevolver">Observaciones</label>
+                            <input class="form-control" id="inputObservacionesDevolver" formControlName="nuevoObservacionesDevolver" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right: 5px;">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="this.devolverPrestamo()">Devolver!</button>
+        
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- modal edicion -->
+<div class="modal fade" id="modalEdicion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{tituloModal}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- contenido del formulario -->
+        <div class="col-md-12 ">
+          <form [formGroup]="forma">
+            <!-- primera fila-->
+            <div class="form-row mb-3">
+              <div class="input-group-md col-md-4">
+                <label for="inputCodigo">Código</label>
+                <input type="text" class="form-control" id="inputCodigo" placeholder="Código" (focusout)="keyDowEnter($event)" (keydown)="this.utiles.UpperCaseF($event)"
+                  formControlName="nuevoCodigo" maxlength="9">
+              </div>
+              <div class="input-group-md col-md-8">
+                <label for="inputNombre">Nombre Producto</label>
+                <input type="text" class="form-control" id="inputNombre" placeholder="Nombres"
+                  formControlName="nuevoNombre" (keydown)="this.utiles.UpperCaseF($event)" maxlength="200">
+              </div>
+            </div>
+            <!-- segunda fila-->
+            <div class="form-row mb-4">
+              <div class="input-group-md col-md-4">
+                <label for="selectMedida">Estado</label>
+                <select class="form-control" id="selectEstadoPrestamo" formControlName="nuevoEstado">
+                  <option value="0">Pendiente</option>
+                  <option value="1">Devuelto</option>
+                </select>
+              </div>
+              <!-- lleno -->
+              <div class="input-group-md col-md-4">
+                <label for="selectMedida">Estado</label>
+                <select class="form-control" id="selectLlenoPrestamo" formControlName="nuevoLleno">
+                  <option value="0">Vacio</option>
+                  <option value="1">Lleno</option>
+                </select>
+              </div>
+              <!-- FECHA -->
+              <div class="input-group-md col-md-4">
+                <label for="inputFecha">Fecha</label>
+                <input type="text" class="form-control" id="inputFecha" formControlName="nuevoFecha" />
+              </div>
+              <!-- NUMERO SERIE -->
+              <div class="input-group-md col-md-4">
+                <label for="inputSeriePrestamo">Número Serie</label>
+                <input type="text" class="form-control" id="inputSeriePrestamo" formControlName="nuevoSerie" />
+              </div>
+                <!-- CAPACIDAD -->
+                <div class="input-group-md col-md-4">
+                  <label for="inputCapacidadPrestamo">Capacidad</label>
+                  <input type="number" class="form-control" id="inputCapacidadPrestamo" formControlName="nuevoCapacidad" />
+                </div>
+                <!-- nro factura -->
+                <div class="input-group-md col-md-4">
+                  <label for="inputNroFactura">Nro. Factura</label>
+                  <input type="number" class="form-control" id="inputNroFactura" formControlName="nuevoNumeroFactura" />
+                </div>                
+              <!-- OBSERVACIONES -->
+              <div class="input-group-md col-md-12">
+                <label for="inputObservacionesPrestamo">Observaciones</label>
+                <input type="text" class="form-control" id="inputObservacionesPrestamo"
+                  formControlName="nuevoObservaciones" />
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div class="row" style="width: 100%;">
+          <div class="col-4 text-left">
+            <button type="button" class="btn btn-info" (click)="limpiar()">Limpiar</button>
+          </div>
+          <div class="col-8 text-right">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary" (click)="guardar()">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
