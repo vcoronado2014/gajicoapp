@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 import * as moment from 'moment';
+import { TmplAstRecursiveVisitor } from '@angular/compiler';
 declare var $:any;
 
 @Injectable()
@@ -795,7 +796,27 @@ export class UtilesService{
         return S?S-1:'k';
       }
 
+      validaFechaEntera(strFecha){
+        //formato que viene 03042020
+        var retorno = this.retornaFechaFormateada(moment());
+        var arrStr = strFecha.split('');
+        if (arrStr.length == 8){
+          //los dos primero elementos es el dia
+          var diaInt = parseInt(arrStr[0].toString() + arrStr[1].toString());
+          var mesInt = parseInt(arrStr[2].toString() + arrStr[3].toString());
 
+          if (diaInt > 0 && diaInt <= 31 && mesInt > 0 && mesInt <= 12){
+            var dia = arrStr[0].toString() + arrStr[1].toString();
+            var mes = arrStr[2].toString() + arrStr[3].toString();
+            var anio = arrStr[4].toString() + arrStr[5].toString() + arrStr[6].toString() + arrStr[7].toString();
+            retorno = dia + '/' + mes + '/' + anio;
+          }
+          
+
+        }
+        return retorno;
+
+      }
 
       //numero a letras
       private Unidades(num){

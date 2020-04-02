@@ -524,6 +524,14 @@ export class GajicoService{
         let data = this.httpClient.get(url, options);
         return data;
     }
+    postPrestamo(prestamo){
+        const body = JSON.stringify(
+            {
+                Prestamo: prestamo
+            }
+        );
+        return this.construyePost(body, 'Prestamos');
+    }
 
 }
 //creacion de la interface

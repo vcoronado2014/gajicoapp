@@ -90,8 +90,9 @@
                   <th>Fecha préstamo</th>
                   <th>Devolución</th>
                   <th>Estado</th>
-                  <th>Serie</th>
+                  <th>Serie y Observaciones</th>
                   <th>Observaciones</th>
+                  <th></th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -111,8 +112,11 @@
                     <i *ngIf="pres.EsLLeno == 1" class="fas fa-battery-full"></i>
                   </td>
                   <td>
-                    <button *ngIf="pres.Id == 0" type="button" class="btn btn-link" (click)="quitarPrestamoGuardar(pres.Indice)">Quitar</button>
-                    <button *ngIf="pres.Id > 0 && pres.Estado == 0" type="button" data-toggle="modal" data-target="#exampleModalCenterD" class="btn btn-link" (click)="abrirModalPrestamoDevolver(pres)">Devolver</button>
+                    <button *ngIf="pres.Id > 0 && pres.Estado == 0" type="button" data-toggle="modal" data-target="#exampleModalCenterD"
+                      class="btn btn-link" (click)="abrirModalPrestamoDevolver(pres)">Devolver</button>
+                  </td>
+                  <td>
+                    <button *ngIf="pres.Id > 0" type="button" class="btn btn-link" (click)="quitarPrestamo(pres)">Quitar</button>
                   </td>
                 </tr>
               </tbody>
@@ -250,8 +254,14 @@
             <div class="form-row mb-3">
               <div class="input-group-md col-md-4">
                 <label for="inputCodigo">Código</label>
+                <!--
                 <input type="text" class="form-control" id="inputCodigo" placeholder="Código" (focusout)="keyDowEnter($event)" (keydown)="this.utiles.UpperCaseF($event)"
-                  formControlName="nuevoCodigo" maxlength="9">
+                  formControlName="nuevoCodigo" maxlength="9">-->
+                  <input class="form-control" id="inputCodigo" list="listaCodigosProd" formControlName="nuevoCodigo" name="listaCodigos"
+                  (focusout)="keyDowEnterProducto($event, 1)" (keydown)="this.utiles.UpperCaseF($event)" />
+                 <datalist id="listaCodigosProd">
+                     <option *ngFor="let item of listaCodigosProd" [value]="item.Nombre">{{item.Nombre}}</option>
+                 </datalist>
               </div>
               <div class="input-group-md col-md-8">
                 <label for="inputNombre">Nombre Producto</label>
@@ -279,7 +289,7 @@
               <!-- FECHA -->
               <div class="input-group-md col-md-4">
                 <label for="inputFecha">Fecha</label>
-                <input type="text" class="form-control" id="inputFecha" formControlName="nuevoFecha" />
+                <input type="text" matInput mask="00/00/0000" class="form-control" id="inputFecha" formControlName="nuevoFecha" />
               </div>
               <!-- NUMERO SERIE -->
               <div class="input-group-md col-md-4">
@@ -313,7 +323,7 @@
             <button type="button" class="btn btn-info" (click)="limpiar()">Limpiar</button>
           </div>
           <div class="col-8 text-right">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-dismiss="modal">Cerrar</button>
             <button type="button" class="btn btn-primary" (click)="guardar()">Guardar</button>
           </div>
         </div>

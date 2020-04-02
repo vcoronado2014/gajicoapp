@@ -23,6 +23,7 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatTable, MatTableDataSource }
 
 declare var $:any;
 import * as moment from 'moment';
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-prestamo',
@@ -65,6 +66,9 @@ export class PrestamoComponent implements OnInit, OnDestroy {
     //fechas
     fechaPrestamo;
     maxDate;
+    listaCodigosProd;
+    listaNombresProd;
+    productoAgregando = null;
 
     constructor(
         private fb: FormBuilder,
@@ -79,6 +83,201 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         private _vcr: ViewContainerRef
     ) {
         //this.toastr.setRootViewContainerRef(_vcr);
+    }
+    
+    obtenerCodigosProductos() {
+        //indicador valor
+    
+        this.loading = true;
+        this.gajico.postTextos(1).subscribe(
+          data => {
+            if (data) {
+              this.listaCodigosProd = data;
+            }
+          },
+          err => {
+            console.error(err);
+            this.loading = false;
+            this.showToast('error', err, 'Error');
+          },
+          () => {
+            this.loading = false;
+            console.log('get info Regiones');
+          }
+        );
+    
+      }
+    crear(){
+        this.limpiar();
+    }
+    quitarPrestamo(prestamo){
+        
+        swal.fire(
+            {
+              title: '¿Estás seguro de eliminar este préstamo?',
+              text: 'Se eliminará el préstamo seleccionado',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'SI, QUIERO ELIMINAR!',
+              cancelButtonText: 'NO, CANCELAR TODO!',
+            }
+          ).then((value) => {
+            if (value.dismiss) {
+              swal.fire('Cancelado');
+            }
+            else{
+                prestamo.Eliminado = 1
+                this.procesoGuardado(prestamo, '', false);
+            }
+          });
+    }
+    devolverPrestamo(){
+        if (this.prestamoDevolver){
+            var serie = '';
+            if (this.formaDevolver.controls.nuevoCodigoDevolver.value != undefined && this.formaDevolver.controls.nuevoCodigoDevolver.value != null){
+                serie = this.formaDevolver.controls.nuevoCodigoDevolver.value.toUpperCase();
+            }
+            var observaciones = '';
+            if (this.formaDevolver.controls.nuevoObservacionesDevolver.value != undefined && this.formaDevolver.controls.nuevoObservacionesDevolver.value != null){
+                observaciones = this.formaDevolver.controls.nuevoObservacionesDevolver.value.toUpperCase();
+            }
+            this.prestamoDevolver.Estado = 1;
+            this.prestamoDevolver.EstadoStr = 'Devuelto';
+            this.prestamoDevolver.FechaDevolucion = this.formaDevolver.controls.nuevoFechaDevolver.value;
+            this.prestamoDevolver.NroSerie = serie;
+            this.prestamoDevolver.Observaciones = observaciones;
+            this.prestamoDevolver.EsLleno = this.formaDevolver.controls.nuevoLlenoDevolver.value;
+            this.procesoGuardado(this.prestamoDevolver, '#exampleModalCenterD', true);
+        }
+      }
+    procesoGuardado(prestamo, modalCerrar, cierraModal){
+        this.loading = true;
+        this.gajico.postPrestamo(prestamo).subscribe(
+          (data: any) => {
+            var datos = data;
+            if (datos){
+              //this.showToast('error', datos.TextoMensaje, 'Error');
+              //ok, generamos la busqueda nuevamente
+                this.buscar();
+                this.limpiar();
+                if (cierraModal){
+                    this.utiles.CerrarModal($(modalCerrar));
+                }
+
+            }
+            else {
+              this.showToast('error', 'Error al guardar', 'Error');
+            }
+    
+          },
+          err => {
+            console.error(err);
+            this.showToast('error', err, 'Error');
+            this.loading = false;
+          },
+          () => {
+            console.log('save completed');
+            //this.showToast('success', 'Guardado con éxito', 'Cliente');
+            this.loading = false;
+    
+          }
+        );
+        //this.limpiar();
+      }
+    guardar(){
+        if (this.productoAgregando != null){
+            if (this.forma.valid){
+                //capturamos los elementos necesarios para guardarlos
+                var factura = 0;
+                if (this.forma.controls.nuevoNumeroFactura.value != undefined && this.forma.controls.nuevoNumeroFactura.value != null){
+                    factura = parseInt(this.forma.controls.nuevoNumeroFactura.value);
+                }
+                var observaciones = '';
+                if (this.forma.controls.nuevoObservaciones.value != undefined && this.forma.controls.nuevoObservaciones.value != null){
+                    observaciones = this.forma.controls.nuevoObservaciones.value;
+                }
+                var entidad = {
+                    Id : 0,
+                    ClienteId: this.clienteEncontrado.Id,
+                    FechaPrestamo: this.utiles.validaFechaEntera(this.forma.controls.nuevoFecha.value),
+                    FechaDevolucion: '',
+                    Cantidad: 1,
+                    NroFactura: factura,
+                    Estado: this.forma.controls.nuevoEstado.value,
+                    NroSerie: this.forma.controls.nuevoSerie.value,
+                    Capacidad: this.forma.controls.nuevoCapacidad.value,
+                    Eliminado: 0,
+                    Observaciones: observaciones,
+                    EsLLeno: this.forma.controls.nuevoLleno.value,
+                    ProdId: this.productoAgregando.Id,
+                }
+                //ahora guardamos
+                this.procesoGuardado(entidad, '#modalEdicion', true);
+
+            }
+            else{
+                var sms = this.utiles.entregaErrorForma(this.forma);
+                this.showToast('error', sms, 'Campos requeridos');
+            }
+            
+        }
+    }
+    keyDowEnterProducto(event, tipoBusqueda) {
+        //console.log(event);
+        var texto = event.target.value;
+    
+        //ambos elementos deben existir para realizar la llamada
+        if (texto && texto.length > 0) {
+          //ahora realizamos la busqueda
+          this.loading = true;
+          this.gajico.postProductosTexto(this.nodIdLogueado, tipoBusqueda, texto).subscribe(
+            data => {
+              if (data) {
+                //cargar la forma con la data
+                var producto = data;
+                //this.productoCreando = producto;
+                this.productoAgregando = producto[0];
+                if (this.productoAgregando && this.productoAgregando.Id > 0){
+                    this.forma.controls.nuevoNombre.setValue(this.productoAgregando.NomProduc);
+                    console.log(this.productoAgregando);
+                }
+                else{
+                    this.productoAgregando = null;
+                }
+
+                //this.showToast('success', 'Correcto', 'Recuperado');
+              }
+            },
+            err => {
+              console.error(err);
+              this.loading = false;
+              this.showToast('error', err, 'Error');
+            },
+            () => {
+              this.loading = false;
+              console.log('get info Regiones');
+            }
+          );
+    
+    
+        }
+    
+      }
+    cargarForma() {
+
+        this.forma = new FormGroup({
+            'nuevoCodigo': new FormControl('', [Validators.required, Validators.minLength(3)]),
+            'nuevoNombre': new FormControl(''),
+            'nuevoEstado': new FormControl(0, Validators.required),
+            'nuevoLleno': new FormControl(0, Validators.required),
+            'nuevoFecha': new FormControl(this.utiles.retornaFechaFormateada(moment()), Validators.required),
+            'nuevoSerie': new FormControl(''),
+            'nuevoCapacidad': new FormControl('0', Validators.required),
+            'nuevoNumeroFactura': new FormControl(''),
+            'nuevoObservaciones': new FormControl('')
+        });
+
+        console.log(this.forma.valid + ' ' + this.forma.status);
     }
     retornaFecha(fechaMoment){
         var retorno = '';
@@ -127,12 +326,36 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         this.maxDate = this.retornaFecha(maxima);
         this.dtOptions = this.utiles.InicializeOptionsPrestamo(this.dtOptions, 8, 'Listado de Préstamos Gajico ltda.');
         //this.cargarClientes(this.nodIdLogueado);
+        this.obtenerCodigosProductos();
+        this.obtenerNombresProductos();
         this.cargarPrestamos(-1, '0');
         this.cargarConsolidado(-1, '0');
         this.cargarForma();
         this.cargarFormaDevolver();
 
     }
+    obtenerNombresProductos() {
+        //indicador valor
+    
+        this.loading = true;
+        this.gajico.postTextos(2).subscribe(
+          data => {
+            if (data) {
+              this.listaNombresProd = data;
+            }
+          },
+          err => {
+            console.error(err);
+            this.loading = false;
+            this.showToast('error', err, 'Error');
+          },
+          () => {
+            this.loading = false;
+            console.log('get info Regiones');
+          }
+        );
+    
+      }
     cargarFormaDevolver() {
         this.loading = true;
         this.formaDevolver = new FormGroup({
@@ -145,6 +368,7 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
       abrirModalPrestamoDevolver(prestamo){
+        this.limpiarPrestamoDevolver();
         console.log(prestamo);
         this.prestamoDevolver = prestamo;
         this.formaDevolver.controls.nuevoObservacionesDevolver.setValue(prestamo.Observaciones);
@@ -299,16 +523,24 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         this.datasource = [];
         this.rerender();
     }
+    limpiarPrestamoDevolver() {
+        this.editando = false;
+        this.formaDevolver.reset({});
+        this.prestamoDevolver = null;
+        this.formaDevolver.controls.nuevoFechaDevolver.setValue(this.utiles.retornaFechaFormateada(moment()));
+        this.formaDevolver.controls.nuevoLlenoDevolver.setValue(0);
 
+    }
     limpiar() {
         this.editando = false;
         this.forma.reset({});
-        this.forma.controls.nuevoRegion.setValue("Seleccione");
-        this.usuarioEditando = null;
-        this.ausIdEditando = 0;
-        this.forma.controls.nuevoRut.enable();
-        this.forma.controls.nuevoDig.enable();
-        this.tituloModal = 'Creando proveedor';
+        this.tituloModal = 'Nuevo Préstamo';
+        this.forma.controls.nuevoCapacidad.setValue(0);
+        this.forma.controls.nuevoEstado.setValue(0);
+        this.forma.controls.nuevoLleno.setValue(0);
+        this.forma.controls.nuevoFecha.setValue(this.utiles.retornaFechaFormateada(moment()));
+        this.productoAgregando = null;
+
     }
 
     rerender() {
@@ -414,25 +646,6 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         setTimeout(function () {
             a.target.value = a.target.value.toUpperCase();
         }, 1);
-    }
-
-    //cargamos la forma
-    cargarForma() {
-
-        this.forma = new FormGroup({
-            'nuevoRut': new FormControl('', [Validators.required, Validators.minLength(3)]),
-            'nuevoDig': new FormControl('', [Validators.required, Validators.maxLength(1)]),
-            'nuevoNombre': new FormControl('', Validators.required),
-            'nuevoRegion': new FormControl('', Validators.required),
-            'nuevoGiro': new FormControl('', Validators.required),
-            'nuevoComuna': new FormControl('', Validators.required),
-            'nuevoDireccion': new FormControl('', Validators.required),
-            'nuevoTelefonos': new FormControl(''),
-            'nuevoCorreo': new FormControl('', [Validators.pattern("[^ @]*@[^ @]*")]),
-            'nuevoFax': new FormControl('')
-        });
-
-        console.log(this.forma.valid + ' ' + this.forma.status);
     }
 
     seleccionar(usu) {
