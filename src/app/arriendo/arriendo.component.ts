@@ -26,6 +26,8 @@ declare var $: any;
 export class ArriendoComponent implements OnInit {
 
 listaArriendos: any = [];
+  //loading
+  loading = false;
 
   constructor(
     private httpClient: HttpClient,
