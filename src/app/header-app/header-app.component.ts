@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
+//environments
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-header-app',
@@ -11,6 +13,7 @@ export class HeaderAppComponent implements OnInit {
   logueado = false;
   titulo: string = '';
   subtitulo: string = '';
+  ambiente = '';
   constructor(
     private router: Router
   ) {
@@ -18,6 +21,15 @@ export class HeaderAppComponent implements OnInit {
    }
 
   ngOnInit() {
+    if (environment.production == false && environment.pre_production == false){
+      this.ambiente = 'Desarrollo';
+    }
+    if (environment.production == true && environment.pre_production == true){
+      this.ambiente = 'Pre-Producción';
+    }
+    if (environment.production == true && environment.pre_production == false){
+      this.ambiente = 'Producción';
+    }
     if (sessionStorage.getItem("USER_LOGUED_IN")){
       this.usuario = JSON.parse(sessionStorage.getItem("USER_LOGUED_IN"));
       if (this.usuario.AutentificacionUsuario){

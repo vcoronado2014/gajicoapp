@@ -7,6 +7,7 @@ import { ToastrManager } from 'ng6-toastr-notifications';
 
 //Servicios
 import { ServicioLoginService } from '../servicios/servicio-login-service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,7 @@ export class LoginComponent implements OnInit {
   loginContrasena:string;
   isLogged: boolean = false; 
   rol;
-
+  ambiente = '';
 
   constructor(
     private auth: ServicioLoginService,
@@ -28,6 +29,15 @@ export class LoginComponent implements OnInit {
     private _vcr: ViewContainerRef
   ) {
     //this.toastr.setRootViewContainerRef(_vcr);
+    if (environment.production == false && environment.pre_production == false){
+      this.ambiente = 'Desarrollo';
+    }
+    if (environment.production == true && environment.pre_production == true){
+      this.ambiente = 'Pre-Producción';
+    }
+    if (environment.production == true && environment.pre_production == false){
+      this.ambiente = 'Producción';
+    }
    }
 
   ngOnInit() {

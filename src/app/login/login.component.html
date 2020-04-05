@@ -2,9 +2,10 @@
     <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
   
     <div class="container">
+      <div style="text-align: center; color: azure;">({{ambiente}})</div>
         <div class="col-sm d-block d-sm-none text-center">
             <!-- <i class="fa fa-user fa-4x user"></i> -->
-            <h5 class="user">Bienvenido a Gajico Ltda.</h5>
+            <h5 class="user">Bienvenido a Gajico Ltda.&nbsp;<span>{{ambiente}}</span> </h5>
             <h6 class="user">Ingrese sus credenciales</h6>
         </div>
       <!-- <center> -->
