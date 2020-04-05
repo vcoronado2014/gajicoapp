@@ -6,7 +6,9 @@
 /out-tsc
 # Only exists if Bazel was run
 /bazel-out
-
+#config
+package.json
+package-lock.json
 # dependencies
 /node_modules
 
