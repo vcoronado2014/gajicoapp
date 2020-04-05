@@ -12,6 +12,47 @@ export class PdfService {
     ){
 
     }
+    //para reporte consolidado
+    generatePdfConsolidado(action='open', detalle, persona){
+        const documentDefinition = this.getDocumentDefinitionConsolidado(persona, detalle);
+
+        switch (action) {
+            case 'open': pdfMake.createPdf(documentDefinition).open(); break;
+            case 'print': pdfMake.createPdf(documentDefinition).print(); break;
+            case 'download': pdfMake.createPdf(documentDefinition).download(); break;
+            default: pdfMake.createPdf(documentDefinition).open(); break;
+        }
+
+    }
+    private columnasEncabezado(){
+        var columns = [];
+        var institucion = this.retornaInstitucion();
+        var entidadTitulo =  {
+            type: 'none',
+            ol: [
+                { text: institucion.Titulo, style: 'header', alignment: 'center' },
+                { text: institucion.Nombre, alignment: 'center', fontSize: 12 },
+                { text: 'Giro: ' + institucion.Giro, alignment: 'center', fontSize: 9 },
+                { text: institucion.Direccion + ' ' + institucion.Comuna, alignment: 'center', fontSize: 9 },
+                { text: 'Telefono:' + institucion.Telefono + '- Fax: ' + institucion.Fax, alignment: 'center', fontSize: 9 },
+                { text: 'Email: ' + institucion.CorreoElectronico, alignment: 'center', fontSize: 9 }
+            ]
+        }
+        
+        var entidadNombreInstitucion = {
+            type: 'none',
+            ol: [
+                { text: 'R.U.T.-' + institucion.Rut + '-' + institucion.Dv, style: 'grande', alignment: 'center' },
+                { text: 'Listado Consolidaddo', alignment: 'center', fontSize: 12 },
+                { text: '', alignment: 'center', style: 'grande' }
+            ]
+        }
+        
+        columns.push(entidadTitulo);
+        columns.push(entidadNombreInstitucion);
+        return columns;
+
+    }
     //para la matriz de punto
     generatePdfPunto(action = 'print', documento, persona, detalle){
         const documentDefinition = this.getDocumentDefinitionPunto(documento, persona, detalle);
@@ -22,6 +63,201 @@ export class PdfService {
             case 'download': pdfMake.createPdf(documentDefinition).download(); break;
             default: pdfMake.createPdf(documentDefinition).open(); break;
         }
+    }
+    private getDocumentDefinitionConsolidado(persona, detalle) {
+        //por mientras retornamos solo el texto
+        return {
+            //configuraciones
+            pageSize: 'A4',
+            pageMargins: [20,40,20,40],
+            pageOrientation: 'landscape',
+            content: [
+                //'This is an sample PDF printed with pdfMake',
+                {
+                    columns: this.columnasEncabezado()
+                },
+                //columna cliente
+                {
+                    margin: [30, 17],
+                    style: 'tableExample',
+                    //border: [false, false, false, false],
+                    table: {
+                        heights: [25, 20, 20],
+                        //widths: [220, '*', 110, '*'],
+                        widths: [180, 140, '*'],
+                        body:
+                            this.bodyDatosColumnaUnoConsolidado(persona),
+                    },
+                    layout: 'noBorders',
+                },
+                {
+                    table:{
+                        widths: [180, '*', 'auto', 'auto', 'auto'],
+                        body: this.retornaArregloPrestamo(detalle),
+                    }
+                },
+
+            ],
+            styles: {
+                nota: {
+                    fontSize: 10
+                },
+                negrita:{
+                    bold: true,
+                    fontSize: 9
+                },
+                header: {
+                    bold: true,
+                    fontSize: 15
+                },
+                grande: {
+                    bold: true,
+                    fontSize: 18
+                },
+                tableExample: {
+                    margin: [0, 0, 0, 0]
+                },
+                tableExampleDetalle: {
+                    margin: [0, 0, 0, 0],
+                    fontSize: 8
+                },
+                quote: {
+                    italics: true
+                },
+                small: {
+                    fontSize: 8
+                }
+            },
+            defaultStyle: {
+                fontSize: 12
+            }
+        }
+    }
+    private retornaArregloPrestamo(prestamos){
+        var retorno = [];
+        var contadorLlenos = 0;
+        var contadorVacios = 0;
+        var header = [
+            { text: 'Producto', bold: true }, { text: 'Series', bold: true }, { text: 'Capacidad', alignment: 'center', bold: true }, { text: 'Llenos', alignment: 'center', bold: true }, { text: 'Vacios', alignment: 'center', bold: true }
+        ];
+        retorno.push(header);
+        if (prestamos.length > 0){
+            prestamos.forEach(prestamo => {
+                var arr = [];
+                var entidadP = {
+                    text:''
+                };
+                var entidadS = {
+                    text:''
+                };
+                var entidadC = {
+                    text:'',
+                    alignment: 'center'
+                };
+                var entidadL = {
+                    text:'',
+                    alignment: 'center'
+                };
+                var entidadV = {
+                    text:'',
+                    alignment: 'center'
+                };
+                if (prestamo.Serie.length > 0){
+                    prestamo.Serie.forEach(serie => {
+                        entidadS.text += 'Nro. Serie: ' + serie.NroSerie + ' ,Observaciones: ' + serie.Observaciones + '\r\n';
+                    });
+                }
+                entidadP.text = prestamo.NombreProducto;
+                entidadC.text = prestamo.Capacidad.toString();
+                entidadL.text = prestamo.Llenos.toString();
+                entidadV.text = prestamo.Vacios.toString();
+                arr.push(entidadP);
+                arr.push(entidadS);
+                arr.push(entidadC);
+                arr.push(entidadL);
+                arr.push(entidadV);
+                contadorLlenos += prestamo.Llenos;
+                contadorVacios += prestamo.Vacios;
+                retorno.push(arr);
+
+            });
+        }
+        var footer = [
+            { text: '' }, { text: '' }, { text: 'Total', alignment: 'center', bold: true }, { text: contadorLlenos.toString(), alignment: 'center', bold: true }, { text: contadorVacios.toString(), alignment: 'center', bold: true }
+        ];
+        retorno.push(footer);
+
+        return retorno;
+    }
+    private bodyDatosColumnaUnoConsolidado(cliente){
+        var body = [
+            //header
+            [
+                {
+                    fillColor: '#eeeeee',
+                    text: 'NOMBRE O RAZÓN SOCIAL',
+                    colSpan: 2
+                },
+                {
+                    //vacia
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'GIRO'
+                },
+
+            ],
+            //datos de la tabla
+            [
+                //columna 1
+                { 
+                    text: cliente.NomClient, fontSize: 10, bold: true, colSpan: 2
+                },
+                //columna 4
+                {
+                    //vacia
+                },
+                //columna 2
+                {
+                    //text: cliente.DirClient + ', ' + cliente.ComClient, fontSize: 10, bold: true 
+                    text: cliente.GirClient, fontSize: 10, bold: true 
+                },
+
+            ],
+            //header
+            [
+                {
+                    fillColor: '#eeeeee',
+                    text: 'DIRECCIÓN'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'COMUNA'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'RUT CLIENTE'
+                }
+            ],
+            //datos de la tabla
+            [
+                //columna 1
+                { 
+                    text: cliente.DirClient, fontSize: 10, bold: true  
+                },
+                //columna 2
+                {
+                    text: cliente.ComClient, fontSize: 10, bold: true 
+                },
+                //columna 4
+                { 
+                    //text: condicion,  fontSize: 10, bold: true 
+                    text: cliente.RutClient + '-' + cliente.DigClient,  fontSize: 10, bold: true 
+                },
+            ],
+        
+        ];
+        return body;
     }
     private getDocumentDefinitionPunto(documento, persona, detalle) {
         //por mientras retornamos solo el texto

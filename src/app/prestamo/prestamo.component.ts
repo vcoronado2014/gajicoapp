@@ -13,6 +13,7 @@ import { ToastrManager } from 'ng6-toastr-notifications';
 //import { GlobalService } from '../servicios/global.service';
 import { GajicoService, User, Proveedor } from '../servicios/gajico.service';
 import { UtilesService } from '../servicios/utiles.service';
+import { PdfService } from '../servicios/pdf.service';
 
 //completer
 import { CompleterService, CompleterData } from 'ng2-completer';
@@ -80,6 +81,7 @@ export class PrestamoComponent implements OnInit, OnDestroy {
         public completerService: CompleterService,
         public utiles: UtilesService,
         public dialog: MatDialog,
+        public pdf: PdfService,
         private _vcr: ViewContainerRef
     ) {
         //this.toastr.setRootViewContainerRef(_vcr);
@@ -109,6 +111,11 @@ export class PrestamoComponent implements OnInit, OnDestroy {
       }
     crear(){
         this.limpiar();
+    }
+    generarPdfConsolidado(action){
+        if (this.consolidado){
+            this.pdf.generatePdfConsolidado(action, this.consolidado, this.clienteEncontrado);
+        }
     }
     quitarPrestamo(prestamo){
         

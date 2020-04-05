@@ -122,7 +122,11 @@
               </tbody>
             </table>
           </div>
+         
           <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <button class="buttons-pdf buttons-html5 btn btn-primary" (click)="generarPdfConsolidado('open')" style="margin-bottom: 5px; margin-right: 10px;">Abrir PDF</button>
+            <button class="buttons-pdf buttons-html5 btn btn-primary" (click)="generarPdfConsolidado('download')" style="margin-bottom: 5px; margin-right: 10px;">Descargar PDF</button>
+            <button class="buttons-pdf buttons-html5 btn btn-primary" (click)="generarPdfConsolidado('print')" style="margin-bottom: 5px;">Imprimir</button>
             <table #table1 mat-table [dataSource]="this.consolidado" class="mat-elevation-z8" style="width:100%">
 
               <!-- Name Column -->
