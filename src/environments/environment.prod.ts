@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  pre_production: true,
+  pre_production: false,
   //API_ENDPOINT: "https://www.asambleas.cl/apps_gaj/api/",
   API_ENDPOINT: '/apps/api/',
   DIRECCION: 'Merced 480 Piso 2, Santiago - Chile',
