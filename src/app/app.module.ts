@@ -23,6 +23,7 @@ import { InicioComponent } from './inicio/inicio.component';
 import { ClientesComponent } from './clientes/clientes.component';
 import { ProveedorComponent } from './proveedor/proveedor.component';
 import { FacturaVentaComponent } from './factura-venta/factura-venta.component';
+import { FacturaCompraComponent } from './factura-compra/factura-compra.component';
 import { FacturasComponent } from './facturas/facturas.component';
 import { ProductosComponent } from './productos/productos.component';
 import { MenuParametrosComponent } from './menu-parametros/menu-parametros.component';
@@ -58,6 +59,7 @@ import { FilterPipe } from './pipes/filter'
     ClientesComponent,
     ProveedorComponent,
     FacturaVentaComponent,
+    FacturaCompraComponent,
     FacturasComponent,
     ProductosComponent,
     MenuParametrosComponent,

@@ -445,6 +445,16 @@ export class GajicoService{
         );
         return this.construyePost(body, 'FacturaVenta');
     }
+    postFacturaCompra(factura, cliente, detalle){
+        const body = JSON.stringify(
+            {
+                Factura: factura,
+                Cliente: cliente,
+                Detalle: detalle
+            }
+        );
+        return this.construyePost(body, 'FacturaCompra');
+    }
     postProveedorArr(instId, rut, dv){
         const headers = new Headers;
         const body = JSON.stringify(
@@ -502,8 +512,8 @@ export class GajicoService{
         let data = this.httpClient.get(url, options);
         return data;
     }
-    getFacturaNumero(numeroFactura){
-        let url = environment.API_ENDPOINT + 'Factura?numeroFactura=' + numeroFactura;
+    getFacturaNumero(numeroFactura, tipoFactura){
+        let url = environment.API_ENDPOINT + 'Factura?numeroFactura=' + numeroFactura + '&tipoFactura=' + tipoFactura;
         let httpHeaders = new HttpHeaders({
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache'

@@ -19,6 +19,7 @@ import { DataTableDirective } from 'angular-datatables';
 
 //dialog
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { PdfService } from '../servicios/pdf.service';
 
 
 declare var $:any;
@@ -109,11 +110,22 @@ export class ComprasComponent implements OnInit, OnDestroy {
     public completerService: CompleterService,
     public utiles: UtilesService,
     public dialog: MatDialog,
-    private _vcr: ViewContainerRef
+    private _vcr: ViewContainerRef,
+    public pdf: PdfService,
   ) { 
     
   }
-
+  abrirCompra(){
+    this.router.navigateByUrl('/factura-compra')
+    .then(data => console.log(data),
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+  crearPdf(action, documento, persona, detalle){
+    this.pdf.generatePdfCompra(action, documento, persona, detalle);
+  }
 sumarNetos(arrDetalle){
   var retorno = 0
   if (arrDetalle && arrDetalle.length > 0){

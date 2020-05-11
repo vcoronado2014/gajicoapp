@@ -523,6 +523,16 @@ export class PdfService {
         return arreglo;
     }
 
+    generatePdfCompra(action = 'open', documento, persona, detalle) {
+        const documentDefinition = this.getDocumentDefinitionCompra(documento, persona, detalle);
+
+        switch (action) {
+            case 'open': pdfMake.createPdf(documentDefinition).open(); break;
+            case 'print': pdfMake.createPdf(documentDefinition).print(); break;
+            case 'download': pdfMake.createPdf(documentDefinition).download(); break;
+            default: pdfMake.createPdf(documentDefinition).open(); break;
+        }
+    }
     generatePdf(action = 'open', documento, persona, detalle) {
         const documentDefinition = this.getDocumentDefinition(documento, persona, detalle);
 
@@ -533,6 +543,175 @@ export class PdfService {
             default: pdfMake.createPdf(documentDefinition).open(); break;
         }
     }
+    private getDocumentDefinitionCompra(documento, persona, detalle) {
+        //por mientras retornamos solo el texto
+        return {
+            //configuraciones
+            pageSize: 'A4',
+            pageMargins: [20,40,20,40],
+            content: [
+                //'This is an sample PDF printed with pdfMake',
+                {
+                    columns: this.columnasDocumento(documento)
+                },
+                {
+                    margin: [0, 20],
+                    style: 'tableExample',
+                    table: {
+                        widths: ['*', 'auto', 'auto', 'auto'],
+                        body: this.bodyDatosClienteCompra(persona, documento)
+                    }
+                },
+                {
+                    margin: [0, 20],
+                    style: 'tableExample',
+                    table: {
+                        widths: ['*', 'auto', 'auto', 'auto', 'auto'],
+                        body: this.arrDetalleCompra(detalle, documento)
+                    }
+                },
+                //NUMERO A LETRAS
+                {
+                    text: 'SON: ' + this.entregaLetras(documento) 
+                    //style: 'header'
+                },
+                //CANCELADO
+                {
+                    margin: [0, 10],
+                    text: 'CANCELADO _____________ DE ___________________________ DEL _____________',
+                    style: 'negrita'
+                },
+                //FIRMA
+                {
+                    margin: [0, 15],
+                    text: 'Nombre ________________________________________________________________________ R.U.T. _________________________\n\n'+
+                          'Fecha______________________________ Recinto:_______________________________ Firma: ______________________________',
+                    style: ['quote', 'small']
+                        
+                },
+
+                
+            ],
+            styles: {
+                nota: {
+                    fontSize: 10
+                },
+                negrita:{
+                    bold: true,
+                    fontSize: 13
+                },
+                header: {
+                    bold: true,
+                    fontSize: 15
+                },
+                grande: {
+                    bold: true,
+                    fontSize: 18
+                },
+                tableExample: {
+                    margin: [0, 0, 0, 0]
+                },
+                quote: {
+                    italics: true
+                },
+                small: {
+                    fontSize: 8
+                }
+            },
+            defaultStyle: {
+                fontSize: 12
+            }
+        }
+    }
+    private arrDetalleCompra(detalle, documento){
+        var header = [ {
+            fillColor: '#eeeeee',
+            text: 'ARTICULO',
+            alignment: 'center'
+        }, 
+        {
+            fillColor: '#eeeeee',
+            text: 'DESCRIPCIÓN',
+            alignment: 'center'
+        }, 
+        {
+            fillColor: '#eeeeee',
+            text: 'VOLUMEN',
+            alignment: 'center'
+        },
+        {
+            fillColor: '#eeeeee',
+            text: 'PRECIO UNITARIO',
+            alignment: 'center'
+        }, 
+        {
+            fillColor: '#eeeeee',
+            text: 'SUBTOTAL',
+            alignment: 'center'
+        }];
+        var retorno = ['', '', '', '', '', ''];
+        var arreglo = [];
+        arreglo.push(header);
+        
+        
+        if (detalle && detalle.length > 0){
+            detalle.forEach(elem => {
+                //CurrencyFormat
+                var preDetail = this.formatMoney(elem.PreDetall, 0,',','.');
+                var netDetail = this.formatMoney(this.subtotalDetalle(elem), 0,',','.');
+                var linea = [];
+                linea.push(elem.ProDetall);
+                linea.push(elem.NomProduc);
+                linea.push(elem.VolDetall.toString());
+                //formatear
+                linea.push(preDetail);
+                linea.push(netDetail);
+                arreglo.push(linea);
+            });
+        }
+        var valorNeto = this.sumarNetos(detalle);
+        var valorTotal = documento.ValFactur;
+        var valorIva = this.calculaImpuesto(documento.ValFactur, valorNeto);
+        var neto = [{
+            border: [false, false, true, false],
+            text: 'NETO', 
+            style: 'negrita', 
+            colSpan: 4, 
+            alignment: 'right'
+        }, {},{},{}, {text: this.formatMoney(valorNeto, 0,',','.'), style: 'negrita', alignment: 'center'}];
+        var iva = [{
+            border: [false, false, true, false],
+            text: 'IVA', 
+            style: 'negrita', 
+            colSpan: 4, 
+            alignment: 'right'
+        }, {},{},{}, {text: this.formatMoney(valorIva, 0,',','.'), style: 'negrita', alignment: 'center'}];
+        var total = [{
+            border: [false, false, true, false],
+            text: 'TOTAL', 
+            style: 'negrita', 
+            colSpan: 4, 
+            alignment: 'right'
+        }, {},{},{}, {text: this.formatMoney(valorTotal, 0,',','.'), style: 'negrita', alignment: 'center'}];
+        arreglo.push(neto);
+        arreglo.push(iva);
+        arreglo.push(total);
+
+        //var numeroLetras = this.utiles.numeroALetras(valorTotal);
+        //console.log(numeroLetras);
+        return arreglo;
+    }
+
+    subtotalDetalle(detalle){
+        var unitario = parseFloat(detalle.PreDetall);
+        var cantidad = parseFloat(detalle.VolDetall);
+        var retorno = 0;
+        if (unitario > 0 && cantidad > 0){
+          retorno = Math.floor(unitario * cantidad);
+        }
+        return retorno;
+      
+      }
     private getDocumentDefinition(documento, persona, detalle) {
         //por mientras retornamos solo el texto
         return {
@@ -818,6 +997,101 @@ export class PdfService {
         ];
         return body;
     }
+    private bodyDatosClienteCompra(cliente, documento){
+        var condicion = '';
+        if (documento.ConFactur == 'O'){
+            condicion = 'CONTADO';
+        }
+        else{
+            condicion = 'CHEQUE';
+        }
+        var body = [
+            //header
+            [
+                {
+                    fillColor: '#eeeeee',
+                    text: 'NOMBRE O RAZÓN SOCIAL',
+                    colSpan: 2
+                },
+                {
+                    //vacia
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'GIRO'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'FECHA EMISIÓN'
+                },
+
+            ],
+            //datos de la tabla
+            [
+                //columna 1
+                { 
+                    text: cliente.NomProved, fontSize: 10, bold: true, colSpan: 2
+                },
+                //columna 4
+                {
+                    //vacia
+                },
+                //columna 2
+                {
+                    //text: cliente.DirClient + ', ' + cliente.ComClient, fontSize: 10, bold: true 
+                    text: cliente.GirProved, fontSize: 10, bold: true 
+                },
+                //columna 3
+                { 
+                    //text: condicion,  fontSize: 10, bold: true 
+                    text: documento.FeeFactur,  fontSize: 10, bold: true 
+                },
+
+            ],
+            //header
+            [
+                {
+                    fillColor: '#eeeeee',
+                    text: 'DIRECCIÓN'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'COMUNA'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'GUIA'
+                },
+                {
+                    fillColor: '#eeeeee',
+                    text: 'RUT PROVEEDOR'
+                }
+            ],
+            //datos de la tabla
+            [
+                //columna 1
+                { 
+                    text: cliente.DirProved, fontSize: 10, bold: true  
+                },
+                //columna 2
+                {
+                    text: cliente.ComProved, fontSize: 10, bold: true 
+                },
+                //columna 3
+                { 
+                    //text: condicion,  fontSize: 10, bold: true 
+                    text: documento.GuiFactur,  fontSize: 10, bold: true 
+                },
+                //columna 4
+                { 
+                    //text: condicion,  fontSize: 10, bold: true 
+                    text: cliente.RutProved + '-' + cliente.DigProved,  fontSize: 10, bold: true 
+                },
+            ],
+        
+        ];
+        return body;
+    }
     private columnasDatosCliente(cliente, documento, detalle){
         var condicion = '';
         if (documento.ConFactur == 'O'){
@@ -971,11 +1245,11 @@ export class PdfService {
         }
     }
     
-    private sumarNetos(arrDetalle) {
+    sumarNetos(arrDetalle) {
         var retorno = 0
         if (arrDetalle && arrDetalle.length > 0) {
             arrDetalle.forEach(detalle => {
-                retorno = retorno + parseInt(detalle.NetDetall);
+                retorno = retorno + this.subtotalDetalle(detalle);
             });
         }
         return retorno;

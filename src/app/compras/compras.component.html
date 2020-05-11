@@ -8,7 +8,7 @@
               <li class="breadcrumb-item" aria-current="page">MENU</li>
               <li class="breadcrumb-item active" aria-current="page">Compras</li>
           </ol>
-          <button type="button" class="btn btn-sm btn-primary" *ngIf="rolIdLogueado == 1 || rolIdLogueado == 2" data-toggle="modal" data-target="#modalEdicion" (click)="crear()">Nuevo Producto</button>
+          <button type="button" class="btn btn-sm btn-primary" *ngIf="rolIdLogueado == 1 || rolIdLogueado == 2" (click)="abrirCompra()">Nueva Compra</button>
       </div>
 
       <div class="grid" style="padding: 20px;">
@@ -88,7 +88,15 @@
       <div class="modal-body">
         <div class="jumbotron jumbotron-fluid" style="padding: 1rem;">
             <div class="container">
-              <h1 class="display-5">Factura</h1>
+              <div class="row">
+                <div class="col-8">
+                  <h1 class="display-10">Factura</h1>
+                </div>
+                <div class="col-2">
+                  <button type="button" class="btn btn-primary" style="float: right;" (click)="crearPdf('open', this.facturaSeleccionada, this.clienteSeleccionado,this.detalleSeleccionado)">Abrir PDF</button>
+                </div>
+                
+              </div>
               <!-- <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p> -->
               <!-- FILA 1-->
             <div class="row" style="font-size: 1.3em;">

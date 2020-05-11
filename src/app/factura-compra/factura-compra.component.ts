@@ -36,12 +36,12 @@ import { Title } from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-factura-venta',
-  templateUrl: './factura-venta.component.html',
-  styleUrls: ['./factura-venta.component.css']
+  selector: 'app-factura-compra',
+  templateUrl: './factura-compra.component.html',
+  styleUrls: ['./factura-compra.component.css']
 })
 
-export class FacturaVentaComponent implements OnInit {
+export class FacturaCompraComponent implements OnInit {
   //loading
   loading = false;
   //forma
@@ -69,7 +69,7 @@ export class FacturaVentaComponent implements OnInit {
   parametros;
   numeroFacturaAnterior = 0;
   numeroFacturaActual = 0;
-  listaArriendos: any = [];
+  
   //productoCreando;
   //variables de modificacion cliente
   modificaCliente: boolean = false;
@@ -90,12 +90,12 @@ export class FacturaVentaComponent implements OnInit {
   cantidadArriendos = 0;
   totalArriendos = 0;
   //si el cliente tiene descuento
-  descuentoCliente = 0;
+  
   mostrarDetalle = false;
   detalleTieneArriendo = false;
   productosPrestamos: any = [];
   prestamosAgregados = [];
-  listaPrestamosGuardar : any = [];
+  
   prestamoSeleccionado = null;
   prestamoDevolver = null;
 
@@ -113,7 +113,8 @@ export class FacturaVentaComponent implements OnInit {
     public pdf: PdfService,
     
   ) {
-
+    //QUEDE ACA, DEBO AGREGAR PRODUCTOS Y GUARDAR LA COMPRA
+    
   }
 
   ngOnInit() {
@@ -147,8 +148,8 @@ export class FacturaVentaComponent implements OnInit {
     this.cargarForma();
     this.cargarFormaFactura();
     this.cargarFormaDetalle();
-    this.cargarFormaPrestamo();
-    this.cargarFormaDevolver();
+    //this.cargarFormaPrestamo();
+    //this.cargarFormaDevolver();
     //swal("hola");
 
   }
@@ -156,183 +157,7 @@ export class FacturaVentaComponent implements OnInit {
     this.prestamoSeleccionado = null;
     this.formaPrestamo.reset({});
   }
-  agregarPrestamoGuardar(){
-    var indice = 1;
-    var codigo = this.formaPrestamo.controls.nuevoCodigoPrestamo.value;
-    var nomProducto = this.formaPrestamo.controls.nuevoNombrePrestamo.value;
-    var prodId = this.prestamoSeleccionado.Id;
-    var clieId = this.usuarioBuscado.Id;
-    var capacidad = this.formaPrestamo.controls.nuevoCapacidadPrestamo.value;//requerido
-    var fecha = this.formaPrestamo.controls.nuevoFechaPrestamo.value;
-    var estado = this.formaPrestamo.controls.nuevoEstadoPrestamo.value;//requerido
-    var lleno = this.formaPrestamo.controls.nuevoLlenoPrestamo.value;//requerido
-    var observaciones = this.formaPrestamo.controls.nuevoObservacionesPrestamo.value;//requerido
-    var estadoStr = 'Pendiente';
-    if (estado == 1){
-      estadoStr = 'Devuelto';
-    }
-    var serie = this.formaPrestamo.controls.nuevoSeriePrestamo.value;//requerido
-    var cantidad = 1;
-    var nroFactura = this.formaFactura.controls.nuevoNumeroFactura.value;
 
-    var errores = [];
-    if (codigo == null || codigo == '') {
-      var error = {
-        Mensaje: 'Codigo Requerido'
-      }
-      errores.push(error);
-    }
-    if (capacidad == null || capacidad == 0) {
-      var error = {
-        Mensaje: 'Capacidad Requerido'
-      }
-      errores.push(error);
-    }
-    if (serie == null || serie == '') {
-      var error = {
-        Mensaje: 'Número de serie Requerido'
-      }
-      errores.push(error);
-    }
-    if (estado == null) {
-      var error = {
-        Mensaje: 'Codigo Requerido'
-      }
-      errores.push(error);
-    }
-    if (errores.length == 0){
-      if (this.listaPrestamosGuardar.length > 0){
-        indice = this.listaPrestamosGuardar.length + 1;
-      }
-      //Id, ClienteId, ProdId, FechaPrestamo, FechaDevolucion, Cantidad, NroFactura, NroSerie, Estado, Eliminado, Capacidad
-      var entidad = {
-        Id: 0,
-        ClienteId: clieId,
-        ProdId: prodId,
-        FechaPrestamo: fecha,
-        FechaDevolucion: '',
-        Cantidad: cantidad,
-        NroFactura: nroFactura,
-        NroSerie: serie.toUpperCase(),
-        Estado: estado,
-        Eliminado: 0,
-        Capacidad: capacidad,
-        Nombre: nomProducto,
-        Codigo: codigo,
-        Indice: indice,
-        EstadoStr: estadoStr,
-        Observaciones: observaciones,
-        EsLleno: lleno
-      }
-      var existe = false;
-      if (this.listaPrestamosGuardar.length == 0) {
-        entidad.Indice = indice;
-        this.listaPrestamosGuardar.push(entidad);
-        indice++;
-      }
-      else {
-        for (var i = 0; i < this.listaPrestamosGuardar.length; i++) {
-          var prestamo = this.listaPrestamosGuardar[i];
-          if (prestamo.Codigo.toUpperCase() == entidad.Codigo.toUpperCase() && prestamo.NroSerie == entidad.NroSerie) {
-            //existe
-            existe = true;
-            break;
-          }
-        }
-        //ahora realizamos las compraciones
-        if (!existe) {
-          entidad.Indice = indice;
-          this.listaPrestamosGuardar.push(entidad);
-          indice++;
-        }
-      }
-      this.limpiarPrestamo();
-      console.log(this.listaPrestamosGuardar);
-    }
-    else {
-      var mensaje = '';
-      errores.forEach(error => {
-        mensaje += error.Mensaje + '\r\n'
-      });
-      swal.fire(
-        {
-          title: 'Errores en el formulario',
-          text: mensaje
-        }
-      )
-    }
-  }
-  abrirModalPrestamoDevolver(prestamo){
-    console.log(prestamo);
-    this.prestamoDevolver = prestamo;
-    this.formaDevolver.controls.nuevoObservacionesDevolver.setValue(prestamo.Observaciones);
-  }
-  quitarPrestamoGuardar(id) {
-    this.listaPrestamosGuardar.forEach(prestamo => {
-      if (prestamo.Indice == id) {
-        prestamo.Eliminado = 1;
-      }
-    });
-
-  }
-  devolverPrestamo(){
-    if (this.prestamoDevolver){
-      this.listaPrestamosGuardar.forEach(prestamo => {
-        if (prestamo.Indice == this.prestamoDevolver.Indice) {
-          prestamo.Estado = 1;
-          prestamo.EstadoStr = 'Devuelto';
-          prestamo.FechaDevolucion = this.formaDevolver.controls.nuevoFechaDevolver.value;
-          prestamo.NroSerie = this.formaDevolver.controls.nuevoCodigoDevolver.value.toUpperCase();
-          prestamo.Observaciones = this.formaDevolver.controls.nuevoObservacionesDevolver.value.toUpperCase();
-          prestamo.EsLleno = this.formaDevolver.controls.nuevoLlenoDevolver.value;
-        }
-      });
-      this.prestamoDevolver = null;
-      this.formaDevolver.reset({});
-    }
-    console.log(this.listaPrestamosGuardar);
-    this.utiles.CerrarModal($('#exampleModalCenterD'));
-  }
-  seleccionarPrestamo(prestamo){
-    console.log(prestamo);
-    this.prestamoSeleccionado = prestamo;
-    if (this.prestamoSeleccionado.Id > 0){
-      this.formaPrestamo.controls.nuevoCodigoPrestamo.setValue(prestamo.CodProduc);
-      this.formaPrestamo.controls.nuevoNombrePrestamo.setValue(prestamo.NomProduc);
-      this.formaPrestamo.controls.nuevoCapacidadPrestamo.setValue(0);
-      this.formaPrestamo.controls.nuevoSeriePrestamo.setValue('');
-      this.formaPrestamo.controls.nuevoFechaPrestamo.setValue(this.utiles.retornaFechaFormateada(moment()));
-      this.formaPrestamo.controls.nuevoEstadoPrestamo.setValue('0');
-      this.formaPrestamo.controls.nuevoLlenoPrestamo.setValue('0');
-      this.formaPrestamo.controls.nuevoObservacionesPrestamo.setValue(prestamo.Observaciones);
-
-    }
-  }
-  cargarFormaDevolver() {
-    this.loading = true;
-    this.formaDevolver = new FormGroup({
-      'nuevoCodigoDevolver': new FormControl(''),
-      'nuevoObservacionesDevolver': new FormControl(''),
-      'nuevoLlenoDevolver': new FormControl('0'),
-      'nuevoFechaDevolver': new FormControl({ value: this.utiles.retornaFechaFormateada(moment()), disabled: true })
-    });
-    //this.formaDevolver.controls.nuevoObservacionesDevolver.setValue(this.formaPrestamo.controls.nuevoObservacionesPrestamo.value);
-    this.loading = false;
-  }
-  cargarFormaPrestamo() {
-    this.loading = true;
-    this.formaPrestamo = new FormGroup({
-      'nuevoCodigoPrestamo': new FormControl({value: '', disabled: true}),
-      'nuevoNombrePrestamo': new FormControl({value: '', disabled: true}),
-      'nuevoCapacidadPrestamo': new FormControl({ value: 0 }),
-      'nuevoSeriePrestamo': new FormControl(''),
-      'nuevoFechaPrestamo': new FormControl({value: '', disabled: true}),
-      'nuevoEstadoPrestamo': new FormControl({value: '0'}),
-      'nuevoLlenoPrestamo': new FormControl({value: '0'}),
-      'nuevoObservacionesPrestamo': new FormControl(''),
-    });
-    this.loading = false;
-  }
   cargarFormaDetalle() {
     this.loading = true;
     this.formaDetalle = new FormGroup({
@@ -377,27 +202,18 @@ export class FacturaVentaComponent implements OnInit {
       'nuevoComuna': new FormControl('', Validators.required),
       'nuevoDireccion': new FormControl('', Validators.required),
       'nuevoTelefonos': new FormControl(''),
-      'nuevoContacto': new FormControl(''),
       'nuevoCorreo': new FormControl('', [Validators.pattern("[^ @]*@[^ @]*")]),
       'nuevoFax': new FormControl(''),
-      'nuevoFleteLocal': new FormControl(''),
-      'nuevoFleteDomicilio': new FormControl(''),
-      'nuevoDescuento': new FormControl('')
     });
     this.loading = false;
     //console.log(this.forma.valid + ' ' + this.forma.status);
   }
   limpiarTodo() {
     this.listaProductos = [];
-    this.listaArriendos= [];
-    this.detalleTieneArriendo = false;
     this.usuarioBuscado = null;
     this.limpiarCliente();
     this.obtenerParametros(this.nodIdLogueado);
     this.mostrarDetalle = false;
-    this.prestamosAgregados = [];
-    this.listaPrestamosGuardar = [];
-    this.prestamoSeleccionado = null;
   }
   print(numeroFactura, gajicoSer, pdf){
     //this.utiles.OpenModal($('#exampleModalCenterImprimir'));
@@ -406,7 +222,6 @@ export class FacturaVentaComponent implements OnInit {
     .append(this.createMessage('Pinche en el botón PDF si desea ver la venta en pdf, pinche en Imprimir si desea mandarlo a la impresora sin formato.'))
     .append('<div class="swal2-actions">')
     .append(this.createButton('PDF','sw_butt1', 'swal2-confirm swal2-styled'))
-    .append(this.createButton('Imprimir','sw_butt2', 'swal2-confirm swal2-styled'))
     .append(this.createButton('Cancelar','sw_butt3', 'swal2-cancel swal2-styled'))
     .append('</div>');
     
@@ -420,27 +235,15 @@ export class FacturaVentaComponent implements OnInit {
       onOpen: function (dObj) {
           $('#sw_butt1').on('click',function () {
              swal.close();
-             gajicoSer.getFacturaNumero(numeroFactura, '2').subscribe(
+             gajicoSer.getFacturaNumero(numeroFactura, '1').subscribe(
               dataP => {
                 if (dataP){
                   var facturaImprimir = dataP;
                   console.log(facturaImprimir);
-                  pdf.generatePdf('open', facturaImprimir.Factura, facturaImprimir.Cliente, facturaImprimir.Detalle);
+                  pdf.generatePdfCompra('open', facturaImprimir.Factura, facturaImprimir.Proveedor, facturaImprimir.Detalle);
                 }
               }
             )
-          });
-          $('#sw_butt2').on('click',function () {
-              swal.close();
-              gajicoSer.getFacturaNumero(numeroFactura, '2').subscribe(
-                dataP => {
-                  if (dataP){
-                    var facturaImprimir = dataP;
-                    console.log(facturaImprimir);
-                    pdf.generatePdfPunto('print', facturaImprimir.Factura, facturaImprimir.Cliente, facturaImprimir.Detalle);
-                  }
-                }
-              )
           });
           $('#sw_butt3').on('click',function () {
               swal.close();
@@ -454,7 +257,7 @@ export class FacturaVentaComponent implements OnInit {
   }
   obtenerFacturaNumero(numeroFactura: any){
     this.loading = true;
-    this.gajico.getFacturaNumero(numeroFactura, '2').subscribe(
+    this.gajico.getFacturaNumero(numeroFactura, '1').subscribe(
       dataP => {
         if (dataP) {
           var facturaImprimir = dataP;
@@ -470,44 +273,7 @@ export class FacturaVentaComponent implements OnInit {
   createMessage(text) {
     return $('<div class="swal2-content" style="display: block;">' + text + '</div>');
   }
-  agregarArriendosVenta(){
-    if (this.listaArriendos && this.listaArriendos.length > 0){
-      //aca debemos generar un elemento que se vaya directo a la lista detalle
-      var valor = '0';
-      var mes = '';
-      var cantidad = this.cantidadArriendos;
-      var dias = this.diasArriendo;
-      var volumen = cantidad * dias;
-      this.listaArriendos.forEach(arrie => {
-        valor = arrie.ValArrien;
-        mes = arrie.FecArrien;
-      });
-      var arrFecha = mes.split('/');
-      var fechaConvertir = new Date(parseInt(arrFecha[2]), parseInt(arrFecha[1]), parseInt(arrFecha[0]), 0,0,0,0);
-      var fecha = this.utiles.entregaFechaDetalle(fechaConvertir);
-      //traer el y año arriendo
-      //debe decir ARRIENDO NOV 2019
-      var entidad = {
-        Id: 0,
-        Eliminado: 0,
-        CodProduc: 'ARRI',
-        NomProduc: 'ARRIENDO ' + fecha.toUpperCase(),
-        //VolProduc: this.formaDetalle.controls.nuevoVolumen.value,
-        //lo dejamos en 0
-        VolProduc: volumen,
-        Cantidad: cantidad,
-        ValProduc: valor,
-        StoProduc: 0,
-        Subtotal: this.totalArriendos,
-        Unidad: 'UN',
-        Descuento: 0,
-        EsArriendoCompleto: true,
-        EsArriendoUnitario: false
-      };
-      this.listaProductos.push(entidad);
-      this.agregarProdPrestamo(entidad);
-    }
-  }
+
   //validar todo
   validaAntesGuardar() {
     var retorno = {
@@ -573,12 +339,6 @@ export class FacturaVentaComponent implements OnInit {
         telefonos = String(this.forma.controls.nuevoTelefonos.value);
       }
     }
-    var contacto = '';
-    if (this.forma.controls.nuevoContacto) {
-      if (this.forma.controls.nuevoContacto.value != null) {
-        contacto = String(this.forma.controls.nuevoContacto.value);
-      }
-    }
     var correo = '';
     if (this.forma.controls.nuevoCorreo) {
       if (this.forma.controls.nuevoCorreo.value != null) {
@@ -589,24 +349,6 @@ export class FacturaVentaComponent implements OnInit {
     if (this.forma.controls.nuevoFax) {
       if (this.forma.controls.nuevoFax.value != null) {
         fax = String(this.forma.controls.nuevoFax.value);
-      }
-    }
-    var fleteLocal = '0';
-    if (this.forma.controls.nuevoFleteLocal) {
-      if (this.forma.controls.nuevoFleteLocal.value != null && String(this.forma.controls.nuevoFleteLocal.value) != '') {
-        fleteLocal = String(this.forma.controls.nuevoFleteLocal.value);
-      }
-    }
-    var fleteDomicilio = '0';
-    if (this.forma.controls.nuevoFleteDomicilio) {
-      if (this.forma.controls.nuevoFleteDomicilio.value != null && String(this.forma.controls.nuevoFleteDomicilio.value) != '') {
-        fleteDomicilio = String(this.forma.controls.nuevoFleteDomicilio.value);
-      }
-    }
-    var descuento = '0';
-    if (this.forma.controls.nuevoDescuento) {
-      if (this.forma.controls.nuevoDescuento.value != null && String(this.forma.controls.nuevoDescuento.value) != '') {
-        descuento = String(this.forma.controls.nuevoDescuento.value);
       }
     }
 
@@ -658,29 +400,6 @@ export class FacturaVentaComponent implements OnInit {
     var banco = this.formaFactura.controls.nuevoBanco.value;
     var vencimiento = this.formaFactura.controls.nuevoVencimiento.value;
     var numeroCheque = this.formaFactura.controls.nuevoNumeroCheque.value;
-    //lo comentamos ya que siempre va
-    /*
-    if (condicionVenta != 'O') {
-      if (banco == '') {
-        var error = {
-          Mensaje: 'Banco invalido'
-        }
-        errores.push(error);
-      }
-      if (vencimiento == '') {
-        var error = {
-          Mensaje: 'Vencimiento cheque invalido'
-        }
-        errores.push(error);
-      }
-      if (numeroCheque == '') {
-        var error = {
-          Mensaje: 'Cheque invalido'
-        }
-        errores.push(error);
-      }
-    }
-    */
     if (this.listaProductos.length == 0) {
       var error = {
         Mensaje: 'No hay Productos en la venta'
@@ -706,21 +425,17 @@ export class FacturaVentaComponent implements OnInit {
 
     var entidadCliente = {
       Id: id,
-      RutClient: rut,
-      DigClient: dv.toUpperCase(),
-      NomClient: nombres.toUpperCase(),
-      CiuClient: ciudad.toUpperCase(),
-      GirClient: giro.toUpperCase(),
-      ComClient: comuna.toUpperCase(),
-      DirClient: direccion.toUpperCase(),
-      TelClient: telefonos,
-      ConClient: contacto.toUpperCase(),
-      CorreoClient: correo.toUpperCase(),
-      FaxClient: fax,
-      FleLocal: fleteLocal,
-      FleDomici: fleteDomicilio,
+      RutProved: rut,
+      DigProved: dv.toUpperCase(),
+      NomProved: nombres.toUpperCase(),
+      CiuProved: ciudad.toUpperCase(),
+      GirProved: giro.toUpperCase(),
+      ComProved: comuna.toUpperCase(),
+      DirProved: direccion.toUpperCase(),
+      TelProved: telefonos,
+      CorreoProved: correo.toUpperCase(),
+      FaxProved: fax,
       Eliminado: 0,
-      DesClient: descuento
     };
     var entidadTotales = {
       Descuento: this.sumarDescuentos(),
@@ -733,7 +448,6 @@ export class FacturaVentaComponent implements OnInit {
     retorno.Productos = this.procesarListaProductos(this.listaProductos, numeroFactura);
     retorno.Factura = entidadFactura;
     retorno.Totales = entidadTotales;
-    retorno.Prestamos = this.listaPrestamosGuardar;
 
     return retorno;
 
@@ -741,7 +455,7 @@ export class FacturaVentaComponent implements OnInit {
   procesarListaProductos(lista, numeroFactura){
     if (lista && lista.length > 0){
      lista.forEach(det => {
-       det.TipDetall = '2';
+       det.TipDetall = '1';
        det.NumDetall = numeroFactura;
        det.CanDetall = det.Cantidad;
        det.VolDetall = det.VolProduc;
@@ -761,7 +475,7 @@ export class FacturaVentaComponent implements OnInit {
   }
   procesoGuardado(retorno){
     this.loading = true;
-    this.gajico.postFacturaVenta(retorno.Factura, retorno.Cliente, retorno.Productos, this.listaArriendos, retorno.Prestamos).subscribe(
+    this.gajico.postFacturaCompra(retorno.Factura, retorno.Cliente, retorno.Productos).subscribe(
       (data: any) => {
         var datos = data;
         if (datos.TipoMensaje != 1){
@@ -807,7 +521,7 @@ export class FacturaVentaComponent implements OnInit {
       swal.fire(
         {
           title: '¿Quieres guardar la factura?',
-          text: 'Se guardará completamente la venta, pudiendo sólo modificar el número de factura posteriormente.',
+          text: 'Se guardará completamente la compra.',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'SI, QUIERO GUARDAR!',
@@ -818,6 +532,8 @@ export class FacturaVentaComponent implements OnInit {
           swal.fire('Cancelado');
         }
         else{
+          console.log(retorno);
+          //lo comentamos para pruebas
           this.procesoGuardado(retorno);
         }
       });
@@ -861,8 +577,6 @@ export class FacturaVentaComponent implements OnInit {
       //ahora realizamos la busqueda
       var cliente;
       this.loading = true;
-      this.listaArriendos = [];
-      this.listaPrestamosGuardar = [];
 
       const headers = new Headers;
       const body = JSON.stringify(
@@ -873,7 +587,7 @@ export class FacturaVentaComponent implements OnInit {
         }
       );
       headers.append('Access-Control-Allow-Origin', '*');
-      let url = environment.API_ENDPOINT + 'Cliente';
+      let url = environment.API_ENDPOINT + 'Proveedor';
       let httpHeaders = new HttpHeaders({
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache'
@@ -887,56 +601,7 @@ export class FacturaVentaComponent implements OnInit {
           this.usuarioBuscado = cliente;
           this.mostrarDatos(cliente);
           if (cliente != undefined){
-            this.descuentoCliente = parseInt(cliente.DesClient);
-            this.gajico.postArriendos(this.usuarioBuscado.RutClient).subscribe(
-              data => {
-                if (data) {
-                  this.listaArriendos = data;
-                  this.procesarListaArriendos();
-                  this.gajico.getPrestamos(cliente.Id, '0').subscribe(
-                    dataP => {
-                      if (dataP){
-                        this.listaPrestamosGuardar = dataP;
-                        if (this.listaPrestamosGuardar && this.listaPrestamosGuardar.length > 0){
-                          var indice = 1;
-                          this.listaPrestamosGuardar.forEach(element => {
-                            element.Indice = indice;
-                            indice++;
-                          });
-                        }
-                        this.loading = false;
-                      }
-                    }
-                  )
-                }
-                else{
-                  this.gajico.getPrestamos(cliente.Id, '0').subscribe(
-                    dataP => {
-                      if (dataP){
-                        this.listaPrestamosGuardar = dataP;
-                        if (this.listaPrestamosGuardar && this.listaPrestamosGuardar.length > 0){
-                          var indice = 1;
-                          this.listaPrestamosGuardar.forEach(element => {
-                            element.Indice = indice;
-                            indice++;
-                          });
-                        }
-                        this.loading = false;
-                      }
-                    }
-                  )
-                }
-              },
-              err => {
-                console.error(err);
-                this.loading = false;
-                this.showToast('error', err, 'Error');
-              },
-              () => {
-                this.loading = false;
-                console.log('get info Regiones');
-              }
-            );
+            this.loading = false;
           }
           else {
             this.loading = false;
@@ -1057,9 +722,7 @@ export class FacturaVentaComponent implements OnInit {
     //aca se debe validar antes
     var productoLista = null;
     var descuento = 0;
-    if (this.descuentoCliente > 0){
-      descuento = (parseInt(this.formaDetalle.controls.nuevoSubtotal.value) * this.descuentoCliente) / 100;
-    }
+
     //por mientras
     var entidad = {
       Id: this.formaDetalle.controls.nuevoId.value,
@@ -1072,7 +735,8 @@ export class FacturaVentaComponent implements OnInit {
       //Cantidad: this.formaDetalle.controls.nuevoCantidad.value,
       Cantidad: this.formaDetalle.controls.nuevoCantidad.value,
       ValProduc: this.formaDetalle.controls.nuevoValor.value,
-      StoProduc: this.formaDetalle.controls.nuevoStock.value - this.formaDetalle.controls.nuevoCantidad.value,
+      //sumamos el stock
+      StoProduc: parseInt(this.formaDetalle.controls.nuevoStock.value) + parseInt(this.formaDetalle.controls.nuevoCantidad.value),
       Subtotal: this.formaDetalle.controls.nuevoSubtotal.value - descuento,
       Unidad: this.formaDetalle.controls.nuevoMedida.value,
       Descuento: descuento,
@@ -1097,12 +761,9 @@ export class FacturaVentaComponent implements OnInit {
           this.listaProductos[i].Cantidad = this.listaProductos[i].Cantidad + entidad.Cantidad;
           this.listaProductos[i].VolProduc = this.listaProductos[i].VolProduc + entidad.VolProduc;
           this.listaProductos[i].Subtotal = this.listaProductos[i].Subtotal + entidad.Subtotal - entidad.Descuento;
-          if (this.descuentoCliente > 0){
-            this.listaProductos[i].Descuento = (parseInt(this.listaProductos[i].Subtotal) * this.descuentoCliente) / 100;
-          }
-          else{
+
             this.listaProductos[i].Descuento = 0;
-          }
+          
           
           existe = true;
           break;
@@ -1132,43 +793,6 @@ export class FacturaVentaComponent implements OnInit {
   modificarNumeroFactura() {
     this.modificaNumeroFactura = true;
     this.formaFactura.controls.nuevoNumeroFactura.enable();
-
-  }
-  guardaNumeroFactura() {
-    if (this.formaFactura.valid) {
-
-      var numero = 0;
-      if (this.formaFactura.controls.nuevoNumeroFactura) {
-        if (this.formaFactura.controls.nuevoNumeroFactura.value != null) {
-          numero = parseInt(this.formaFactura.controls.nuevoNumeroFactura.value);
-        }
-      }
-
-      this.loading = true;
-      this.gajico.putParametros(this.parametros.Id, this.nodIdLogueado, numero, this.parametros.Iva,
-        this.parametros.StockMinimoCantidad, this.parametros.StockMinimoMetros).subscribe(
-          data => {
-            if (data) {
-              var nuevoParametro = data;
-              this.parametros = nuevoParametro;
-              //ahora que tenemos el nuevo giro lo insertamos a la lista
-              this.modificaNumeroFactura = false;
-              this.formaFactura.controls.nuevoNumeroFactura.disable();
-              this.showToast('success', 'Numero factura actualizado', 'Número Factura');
-            }
-          },
-          err => {
-            console.error(err);
-            this.loading = false;
-            this.showToast('error', err, 'Error');
-          },
-          () => {
-            this.loading = false;
-            console.log('get info Regiones');
-          }
-        );
-
-    }
 
   }
   calculaSubtotal(event) {
@@ -1213,32 +837,19 @@ export class FacturaVentaComponent implements OnInit {
       }
     }
   }
-  onChangeDiasArriendo(event) {
-    if (event.target.value) {
-      //solo si es contado se limpian los datos del cheque
-      this.diasArriendo = event.target.value;
-      this.procesarListaArriendos();
-    }
-  }
-  onChangeDiasArriendoDetalle(event) {
-    if (event.target.value) {
-      //solo si es contado se limpian los datos del cheque
-      this.diasArriendo = event.target.value;
-      this.procesarListaArriendos();
-    }
-  }
+
   mostrarDatosParametros() {
     if (this.parametros) {
       this.formaFactura.setValue({
         nuevoVencimiento: '',
         nuevoBanco: '',
-        nuevoNumeroFactura: this.numeroFacturaActual,
+        nuevoNumeroFactura: '0',
         nuevoNumeroGuia: '0',
         nuevoCV: 'O',
         nuevoNumeroCheque: ''
       });
       //deshabilitamos
-      this.formaFactura.controls.nuevoNumeroFactura.disable();
+      //this.formaFactura.controls.nuevoNumeroFactura.disable();
     }
   }
   mostrarDatosDetalle(detalle) {
@@ -1363,25 +974,22 @@ export class FacturaVentaComponent implements OnInit {
   }
   mostrarDatos(usu) {
     if (usu) {
-      this.obtenerComunas(this.usuarioBuscado.CiuClient, null);
+      this.obtenerComunas(this.usuarioBuscado.CiuProved, null);
       //setear los campos
       //this.forma.controls.nuevoNombreUsuario
       this.forma.setValue({
         nuevoIdCliente: this.usuarioBuscado.Id,
-        nuevoRut: this.usuarioBuscado.RutClient,
-        nuevoDig: this.usuarioBuscado.DigClient,
-        nuevoNombre: this.usuarioBuscado.NomClient,
-        nuevoRegion: this.usuarioBuscado.CiuClient,
-        nuevoGiro: this.usuarioBuscado.GirClient,
-        nuevoComuna: this.usuarioBuscado.ComClient,
-        nuevoDireccion: this.usuarioBuscado.DirClient,
-        nuevoTelefonos: this.usuarioBuscado.TelClient,
-        nuevoContacto: this.usuarioBuscado.ConClient,
-        nuevoCorreo: this.usuarioBuscado.CorreoClient,
-        nuevoFax: this.usuarioBuscado.FaxClient,
-        nuevoFleteLocal: this.usuarioBuscado.FleLocal,
-        nuevoFleteDomicilio: this.usuarioBuscado.FleDomici,
-        nuevoDescuento: this.usuarioBuscado.DesClient,
+        nuevoRut: this.usuarioBuscado.RutProved,
+        nuevoDig: this.usuarioBuscado.DigProved,
+        nuevoNombre: this.usuarioBuscado.NomProved,
+        nuevoRegion: this.usuarioBuscado.CiuProved,
+        nuevoGiro: this.usuarioBuscado.GirProved,
+        nuevoComuna: this.usuarioBuscado.ComProved,
+        nuevoDireccion: this.usuarioBuscado.DirProved,
+        nuevoTelefonos: this.usuarioBuscado.TelProved,
+        nuevoCorreo: this.usuarioBuscado.CorreoProved,
+        nuevoFax: this.usuarioBuscado.FaxProved,
+
       });
       //deshabilitamos
       this.desactivarControles();
@@ -1397,12 +1005,8 @@ export class FacturaVentaComponent implements OnInit {
     this.forma.controls.nuevoComuna.disable();
     this.forma.controls.nuevoDireccion.disable();
     this.forma.controls.nuevoTelefonos.disable();
-    this.forma.controls.nuevoContacto.disable();
     this.forma.controls.nuevoCorreo.disable();
     this.forma.controls.nuevoFax.disable();
-    this.forma.controls.nuevoFleteLocal.disable();
-    this.forma.controls.nuevoFleteDomicilio.disable();
-    this.forma.controls.nuevoDescuento.disable();
   }
   activarControles() {
     this.forma.controls.nuevoRut.disable();
@@ -1413,12 +1017,8 @@ export class FacturaVentaComponent implements OnInit {
     this.forma.controls.nuevoComuna.enable();
     this.forma.controls.nuevoDireccion.enable();
     this.forma.controls.nuevoTelefonos.enable();
-    this.forma.controls.nuevoContacto.enable();
     this.forma.controls.nuevoCorreo.enable();
     this.forma.controls.nuevoFax.enable();
-    this.forma.controls.nuevoFleteLocal.enable();
-    this.forma.controls.nuevoFleteDomicilio.enable();
-    this.forma.controls.nuevoDescuento.enable();
   }
   modificarCliente(modifica) {
     if (modifica) {
@@ -1432,17 +1032,7 @@ export class FacturaVentaComponent implements OnInit {
     this.modificaCliente = false;
     this.botonLimpiarCliente = false;
   }
-  procesarListaArriendos(){
-    this.cantidadArriendos = 0;
-    this.totalArriendos = 0;
-    if (this.listaArriendos && this.listaArriendos.length > 0){
-      this.listaArriendos.forEach(arriendo => {
-        arriendo.Neto = this.netoArriendo(arriendo);
-        this.cantidadArriendos = this.cantidadArriendos + parseInt(arriendo.CanArrien);
-        this.totalArriendos = this.totalArriendos + parseInt(arriendo.Neto.toString());
-      });
-    }
-  }
+
   limpiarCliente() {
     //dejamos al cliente editando nulo
     this.modificaCliente = false;
@@ -1459,17 +1049,9 @@ export class FacturaVentaComponent implements OnInit {
     this.forma.controls.nuevoComuna.enable();
     this.forma.controls.nuevoDireccion.enable();
     this.forma.controls.nuevoTelefonos.enable();
-    this.forma.controls.nuevoContacto.enable();
     this.forma.controls.nuevoCorreo.enable();
     this.forma.controls.nuevoFax.enable();
-    this.forma.controls.nuevoFleteLocal.enable();
-    this.forma.controls.nuevoFleteDomicilio.enable();
-    this.forma.controls.nuevoDescuento.enable();
     this.mostrarDetalle = false;
-    this.listaArriendos= [];
-    this.detalleTieneArriendo = false;
-    this.listaPrestamosGuardar = [];
-    this.prestamoSeleccionado = null;
   }
   guardarCliente() {
     if (this.forma.valid) {
@@ -1522,12 +1104,6 @@ export class FacturaVentaComponent implements OnInit {
           telefonos = String(this.forma.controls.nuevoTelefonos.value);
         }
       }
-      var contacto = '';
-      if (this.forma.controls.nuevoContacto) {
-        if (this.forma.controls.nuevoContacto.value != null) {
-          contacto = String(this.forma.controls.nuevoContacto.value);
-        }
-      }
       var correo = '';
       if (this.forma.controls.nuevoCorreo) {
         if (this.forma.controls.nuevoCorreo.value != null) {
@@ -1538,24 +1114,6 @@ export class FacturaVentaComponent implements OnInit {
       if (this.forma.controls.nuevoFax) {
         if (this.forma.controls.nuevoFax.value != null) {
           fax = String(this.forma.controls.nuevoFax.value);
-        }
-      }
-      var fleteLocal = '0';
-      if (this.forma.controls.nuevoFleteLocal) {
-        if (this.forma.controls.nuevoFleteLocal.value != null && String(this.forma.controls.nuevoFleteLocal.value) != '') {
-          fleteLocal = String(this.forma.controls.nuevoFleteLocal.value);
-        }
-      }
-      var fleteDomicilio = '0';
-      if (this.forma.controls.nuevoFleteDomicilio) {
-        if (this.forma.controls.nuevoFleteDomicilio.value != null && String(this.forma.controls.nuevoFleteDomicilio.value) != '') {
-          fleteDomicilio = String(this.forma.controls.nuevoFleteDomicilio.value);
-        }
-      }
-      var descuento = '0';
-      if (this.forma.controls.nuevoDescuento) {
-        if (this.forma.controls.nuevoDescuento.value != null && String(this.forma.controls.nuevoDescuento.value) != '') {
-          descuento = String(this.forma.controls.nuevoDescuento.value);
         }
       }
 
@@ -1580,13 +1138,9 @@ export class FacturaVentaComponent implements OnInit {
         Comuna: comuna.toUpperCase(),
         Direccion: direccion.toUpperCase(),
         Telefonos: telefonos,
-        Contacto: contacto.toUpperCase(),
         Correo: correo.toUpperCase(),
         Fax: fax,
-        FleteLocal: fleteLocal,
-        FleteDomicilio: fleteDomicilio,
         Eliminado: 0,
-        Descuento: descuento
       }
       this.loading = true;
       this.gajico.putCliente(entidad).subscribe(
@@ -1597,7 +1151,7 @@ export class FacturaVentaComponent implements OnInit {
           this.usuarioBuscado = cliente;
           this.mostrarDatos(cliente);
           if (cliente != undefined){
-            this.descuentoCliente = cliente.DesClient;
+            //this.descuentoCliente = cliente.DesClient;
           }
           //this.rerenderNod(this.nodIdLogueado);
         },
@@ -1664,35 +1218,7 @@ export class FacturaVentaComponent implements OnInit {
     );
 
   }
-  obtenerPrestamos(clienteId, eliminado) {
-    //indicador valor
-    this.listaPrestamosGuardar = [];
-    this.loading = true;
-    this.gajico.getPrestamos(clienteId, eliminado).subscribe(
-      data => {
-        if (data) {
-          this.listaPrestamosGuardar = data;
-          if (this.listaPrestamosGuardar && this.listaPrestamosGuardar.length > 0){
-            var indice = 1;
-            this.listaPrestamosGuardar.forEach(element => {
-              element.Indice = indice;
-              indice++;
-            });
-          }
-        }
-      },
-      err => {
-        console.error(err);
-        this.loading = false;
-        this.showToast('error', err, 'Error');
-      },
-      () => {
-        this.loading = false;
-        console.log('get info prod prestamos');
-      }
-    );
 
-  }
   obtenerComunas(regId, id) {
     //indicador valor
     this.listaComunas = [];
@@ -1783,9 +1309,6 @@ export class FacturaVentaComponent implements OnInit {
       data => {
         if (data) {
           this.parametros = data;
-          //actualizamos los numeros de factura
-          this.numeroFacturaAnterior = parseInt(this.parametros.NumDocumento);
-          this.numeroFacturaActual = this.numeroFacturaAnterior + 1;
           this.mostrarDatosParametros();
           console.log(this.parametros);
           this.loading = false;
@@ -1850,13 +1373,6 @@ export class FacturaVentaComponent implements OnInit {
   }
   sumarDescuentos() {
     var retorno = 0
-    if (this.descuentoCliente > 0){
-      if (this.listaProductos && this.listaProductos.length > 0) {
-        this.listaProductos.forEach(detalle => {
-          retorno = retorno + parseInt(detalle.Descuento);
-        });
-      }
-    }
     return retorno;
   }
   sumarNetosN() {
