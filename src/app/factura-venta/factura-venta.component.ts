@@ -66,6 +66,7 @@ export class FacturaVentaComponent implements OnInit {
   listaProductos = [];
   listaNombresProd;
   listaCodigosProd;
+  listaCodigosArriendo;
   parametros;
   numeroFacturaAnterior = 0;
   numeroFacturaActual = 0;
@@ -339,6 +340,7 @@ export class FacturaVentaComponent implements OnInit {
       'nuevoId': new FormControl(0),
       'nuevoDiasArriendoDetalle': new FormControl('0'),
       'nuevoCodigo': new FormControl('', Validators.required),
+      'nuevoCodigoArriendo': new FormControl(''),
       'nuevoNombreDetalle': new FormControl('', Validators.required),
       'nuevoStock': new FormControl('0', [Validators.required, Validators.min(1)]),
       'nuevoCantidad': new FormControl(0, [Validators.required, Validators.min(1)]),
@@ -752,7 +754,8 @@ export class FacturaVentaComponent implements OnInit {
        det.IvaDetall = '';
        det.CilDetall = '';
        det.DiaDetall = '';
-       det.ArrDetall = '';
+       //ocuparemos este campo para enviar el producto asociado alarriendo
+       det.ArrDetall = det.CodProducArriendo;
        det.CafDetall = '';
        det.MofDetall = '';
      });
@@ -1065,6 +1068,7 @@ export class FacturaVentaComponent implements OnInit {
       Id: this.formaDetalle.controls.nuevoId.value,
       Eliminado: 0,
       CodProduc: this.formaDetalle.controls.nuevoCodigo.value.toUpperCase(),
+      CodProducArriendo: this.formaDetalle.controls.nuevoCodigoArriendo.value.toUpperCase(),
       NomProduc: this.formaDetalle.controls.nuevoNombreDetalle.value.toUpperCase(),
       //VolProduc: this.formaDetalle.controls.nuevoVolumen.value,
       //lo dejamos en 0
@@ -1083,7 +1087,7 @@ export class FacturaVentaComponent implements OnInit {
     var existe = false;
     if (this.listaProductos.length == 0) {
       if (this.detalleTieneArriendo){
-        entidad.NomProduc = 'ARRIENDO ' + this.utiles.entregaFechaDetalle(moment());
+        entidad.NomProduc = 'ARRIENDO ' + entidad.CodProducArriendo + ' ' + this.utiles.entregaFechaDetalle(moment());
       }
       this.listaProductos.push(entidad);
       this.agregarProdPrestamo(entidad);
@@ -1111,7 +1115,7 @@ export class FacturaVentaComponent implements OnInit {
       //ahora realizamos las compraciones
       if (!existe) {
         if (this.detalleTieneArriendo){
-          entidad.NomProduc = 'ARRIENDO ' + this.utiles.entregaFechaDetalle(moment());
+          entidad.NomProduc = 'ARRIENDO '+ entidad.CodProducArriendo + ' ' + this.utiles.entregaFechaDetalle(moment());
         }
         this.listaProductos.push(entidad);
         this.agregarProdPrestamo(entidad);
@@ -1266,6 +1270,7 @@ export class FacturaVentaComponent implements OnInit {
               this.formaDetalle.setValue({
                 nuevoId: detalle.Id,
                 nuevoCodigo: detalle.CodProduc,
+                nuevoCodigoArriendo: '',
                 nuevoNombreDetalle: detalle.NomProduc,
                 nuevoStock: 0,
                 nuevoCantidad: 0,
@@ -1285,6 +1290,7 @@ export class FacturaVentaComponent implements OnInit {
           this.formaDetalle.setValue({
             nuevoId: detalle.Id,
             nuevoCodigo: detalle.CodProduc,
+            nuevoCodigoArriendo: '',
             nuevoNombreDetalle: detalle.NomProduc,
             nuevoStock: detalle.StoProduc,
             nuevoCantidad: 0,
@@ -1304,6 +1310,7 @@ export class FacturaVentaComponent implements OnInit {
         var nuevoCodigo = this.formaDetalle.controls.nuevoCodigo.value.toUpperCase();
         this.formaDetalle.setValue({
           nuevoCodigo: nuevoCodigo,
+          nuevoCodigoArriendo: '',
           nuevoId: 0,
           nuevoNombreDetalle: '',
           nuevoStock: 0,
@@ -1324,6 +1331,7 @@ export class FacturaVentaComponent implements OnInit {
       var nuevoCodigo = this.formaDetalle.controls.nuevoCodigo.value.toUpperCase();
       this.formaDetalle.setValue({
         nuevoCodigo: nuevoCodigo,
+        nuevoCodigoArriendo: '',
         nuevoId: 0,
         nuevoNombreDetalle: '',
         nuevoStock: 0,
@@ -1344,6 +1352,7 @@ export class FacturaVentaComponent implements OnInit {
     //this.formaDetalle.reset({});
     this.formaDetalle.setValue({
       nuevoCodigo: '',
+      nuevoCodigoArriendo: '',
       nuevoId: 0,
       nuevoNombreDetalle: '',
       nuevoStock: 0,
@@ -1834,6 +1843,7 @@ export class FacturaVentaComponent implements OnInit {
       data => {
         if (data) {
           this.listaCodigosProd = data;
+          this.listaCodigosArriendo = data;
         }
       },
       err => {

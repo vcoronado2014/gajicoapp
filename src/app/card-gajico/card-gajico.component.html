@@ -1,0 +1,27 @@
+<div class="card info">
+    <img [src]="a.UrlImagen" class="d-block card-img-top" alt="icono">
+    <div class="card-body">
+        <h5 class="card-title font-title-card">{{a.Titulo}}</h5>
+        <p class="card-text">{{a.Contenido}}</p>
+
+    </div>
+    <div *ngIf="!a.EsOferta && a.TienePrecio" class="card-footer">
+        <span class="text-center price">{{ a.PrecioActual | currency : 'CLP' :'symbol-narrow':'3.0' | currencyFormat }}</span>
+        <small> + IVA</small>
+    </div>
+    <div *ngIf="a.EsOferta && a.TienePrecio" class="card-footer">
+        <div class="row" style="padding-left: 16px;">
+            <del>
+                <span class="text-center price">Antes {{ a.PrecioAnterior | currency : 'CLP'
+                    :'symbol-narrow':'3.0' | currencyFormat }}</span>
+                <small class="iva"> + IVA</small>
+            </del>
+            
+        </div>
+        <div class="row content" style="padding-left: 16px;">
+            <span class="text-center price">Ahora {{ a.PrecioActual | currency : 'CLP' :'symbol-narrow':'3.0' | currencyFormat }}</span>
+            <small class="iva"> + IVA</small>
+        </div>
+        
+    </div>
+</div>

@@ -35,6 +35,9 @@ export class LoginComponent implements OnInit {
     if (environment.production == true && environment.pre_production == true){
       this.ambiente = 'Pre-Producción';
     }
+    if (environment.production == false && environment.pre_production == true){
+      this.ambiente = 'Pre-Producción';
+    }
     if (environment.production == true && environment.pre_production == false){
       this.ambiente = 'Producción';
     }

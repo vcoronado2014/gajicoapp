@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewContainerRef, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators, FormArray, FormBuilder } from '@angular/forms';
-import { Router } from "@angular/router";
+import { NavigationExtras, Router } from "@angular/router";
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 
@@ -473,6 +473,17 @@ export class ProductosComponent implements OnInit, OnDestroy {
       this.toastr.warningToastr(mensaje, titulo);
     }
 
+  }
+  irArticulo(producto) {
+    let navigationExtras: NavigationExtras = {
+      queryParams:{ producto: JSON.stringify(producto) }
+    };
+    this.router.navigate(['/articulo'], navigationExtras)
+      .then(data => console.log(data),
+        error => {
+          console.log(error);
+        }
+      )
   }
 }
 

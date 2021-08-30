@@ -130,7 +130,7 @@ export class UtilesService{
                 "searchable": false
               },
               { 
-                orderable: false, targets: [5] 
+                orderable: false, targets: [6] 
               }
             ],
             lengthMenu: [8, 10, 20, 50],
@@ -515,6 +515,83 @@ export class UtilesService{
 
           };
           return dtOptions;
+      }
+            //prestamos
+      InicializeOptionsArriendo(dtOptions, largoInicial, titulo) {
+        dtOptions = {
+          info: {
+            title: titulo,
+            author: 'Víctor Coronado'
+          },
+          pagingType: 'full_numbers',
+          pageLength: largoInicial,
+          language: {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+          },
+          columnDefs: [
+            {
+              targets: [0, 1, 2],
+              className: 'mdl-data-table__cell--non-numeric'
+            },
+            {
+              "targets": [0, 7],
+              "visible": false,
+              "searchable": false
+            },
+            {
+              orderable: false, targets: [8]
+            }
+          ],
+          lengthMenu: [8, 10, 20, 50],
+          dom: 'Blfrtip',
+          buttons: [
+            {
+              extend: 'copy',
+              title: titulo,
+              text: 'Copiar',
+              orientation: 'landscape',
+              exportOptions: {
+                columns: [1, 2, 3, 4, 5, 6]
+              }
+            },
+            {
+              extend: 'print',
+              title: titulo,
+              text: 'Imprimir',
+              orientation: 'landscape',
+              exportOptions: {
+                columns: [1, 2, 3, 4, 5, 6]
+              }
+            },
+            {
+              extend: 'pdf',
+              text: 'PDF',
+              orientation: 'landscape',
+              title: titulo,
+              pageSize: 'A4',
+              exportOptions: {
+                columns: [1, 2, 3, 4, 5, 6]
+              }
+              //className: 'btn btn-default btn-xs'
+            },
+            {
+              extend: 'excel',
+              title: titulo,
+              text: 'Exportar a excel',
+              orientation: 'landscape',
+              exportOptions: {
+                columns: [1, 2, 3, 4, 5, 6]
+              }
+            },
+          ],
+          initComplete: function () {
+            var btns = $('.dt-button');
+            btns.addClass('btn btn-primary');
+            btns.removeClass('dt-button');
+          }
+
+        };
+        return dtOptions;
       }
       //consolidado
       InicializeOptionsConsolidado(dtOptions, largoInicial, titulo) {

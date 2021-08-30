@@ -1,0 +1,56 @@
+
+<div class="container marketing">
+    <h4 *ngIf="!loading">Productos destacados</h4>
+    <div class="d-flex justify-content-center" *ngIf="loading">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    <div id="myCarousel2" class="carousel slide pt-3 pb-3 d-none d-sm-block" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleCaptions" *ngFor="let item of articulosOferta?.slice(0, 4);let index = index"
+                [attr.data-slide-to]="index"></li>
+            <li data-target="#carouselExampleCaptions" *ngFor="let item of articulosOferta?.slice(4, 8);let index = index"
+                [attr.data-slide-to]="index"></li>
+            <li data-target="#carouselExampleCaptions" *ngFor="let item of articulosOferta?.slice(8, 12);let index = index"
+                [attr.data-slide-to]="index"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class=" col-md-3" *ngFor="let a of articulosOferta?.slice(0, 4)">
+                        <card-gajico-app [a]="a"></card-gajico-app>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class=" col-md-3" *ngFor="let a of articulosOferta?.slice(4, 8)">
+                        <card-gajico-app [a]="a"></card-gajico-app>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class=" col-md-3" *ngFor="let a of articulosOferta?.slice(8, 12)">
+                        <card-gajico-app [a]="a"></card-gajico-app>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a *ngIf="!loading" class="carousel-control-prev" href="#myCarousel2" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a *ngIf="!loading" class="carousel-control-next" href="#myCarousel2" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <!-- ojo mostrar bien aaca, solo se debe mostrar para xs-->
+    <div class="d-block d-sm-none row">
+        <div class="col" *ngFor="let a of articulosOferta">
+            <card-gajico-app [a]="a"></card-gajico-app>
+        </div>
+    </div>
+</div>

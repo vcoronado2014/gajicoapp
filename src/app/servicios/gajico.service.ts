@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 
 //import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs';
-import { ɵAnimationGroupPlayer } from '@angular/animations';
+import { useAnimation, ɵAnimationGroupPlayer } from '@angular/animations';
 //import 'rxjs/add/operator/retry';
 //import { HttpErrorResponse } from '@angular/common/http';
 
@@ -43,6 +43,7 @@ export class GajicoService{
         return data;
 
     }
+
     construyePut(body, nombreControlador){
         const headers = new Headers;
         const bodyDinamic = body;
@@ -542,6 +543,167 @@ export class GajicoService{
         );
         return this.construyePost(body, 'Prestamos');
     }
+    getArriendo(id){
+        let url = environment.API_ENDPOINT + 'Arriendos?id=' + id;
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        let options = { headers: httpHeaders };
+        let data = this.httpClient.get(url, options);
+        return data;
+    }
+    putArriendo(arriendo){
+        const body = JSON.stringify(
+            {
+                Arriendo: arriendo
+            }
+        );
+        return this.construyePut(body, 'Arriendos');
+    }
+    //articulos
+    postArticulo(File, id, visible, usaImagen, usaTitulo, titulo, contenido,
+        eliminado, instId, prodId, esOferta, precioAnterior, precioActual, idCategoria){
+        let model = new FormData();
+        model.append("UploadedImage", File);
+        model.append("Id", id.toString());
+        model.append("Visible", visible.toString());
+        model.append("UsaImagen", usaImagen.toString());
+        model.append("UsaTitulo", usaTitulo.toString());
+        model.append("Titulo", titulo);
+        model.append("Contenido", contenido);
+        model.append("Eliminado", eliminado.toString());
+        model.append("InstId", instId.toString());
+        model.append("ProdId", prodId.toString());
+        model.append("EsOferta", esOferta.toString());
+        model.append("PrecioAnterior", precioAnterior.toString());
+        model.append("PrecioActual", precioActual.toString());
+        model.append("IdCategoria", idCategoria.toString());
+
+        let url = environment.API_ENDPOINT + 'Articulo';
+
+        let data = this.httpClient.post(url, model, {});
+        return data;
+
+        }
+        getArticulo(instId, prodId){
+            let url = environment.API_ENDPOINT + 'Articulo?instId=' + instId + '&prodId=' + prodId;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+            let data = this.httpClient.get(url, options);
+            return data;
+        }
+        deleteArticulo(id){
+            const headers = new Headers;
+            headers.append('Access-Control-Allow-Origin', '*');
+            let url = environment.API_ENDPOINT + 'Articulo?id=' + id;
+    
+            let httpHeaders = new HttpHeaders({
+                'Content-Type' : 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+     
+            let data = this.httpClient.post(url, {}, options);
+            return data;
+        }
+        getCategorias(eliminado){
+            let url = environment.API_ENDPOINT + 'Categoria?eliminado=' + eliminado;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+            let data = this.httpClient.get(url, options);
+            return data;
+        }
+        getInstitucion(idInstitucion){
+            let url = environment.API_ENDPOINT + 'Institucion?idInstitucion=' + idInstitucion;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+            let data = this.httpClient.get(url, options);
+            return data;
+        }
+        getContacto(instId){
+            let url = environment.API_ENDPOINT + 'Correo?idInstitucion=' + instId.toString();
+            let httpHeaders = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+            let data = this.httpClient.get(url, options);
+            return data;
+        }
+        postContacto(correoDestino, mensaje, nombre, telefono, correoOrigen, instId){
+            let url = environment.API_ENDPOINT + 'Correo?correoDestino=' + correoDestino + '&mensaje=' + mensaje
+            +'&nombre=' + nombre + '&telefono=' + telefono + '&correoOrigen=' + correoOrigen + '&instId=' + instId;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type' : 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+     
+            let data = this.httpClient.post(url, {}, options);
+            return data;
+        }
+        insertarCategoria(nombre){
+            let url = environment.API_ENDPOINT + 'Categoria?nombre=' + nombre;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type' : 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+     
+            let data = this.httpClient.post(url, {}, options);
+            return data;
+        }
+        eliminarCategoria(id){
+            let url = environment.API_ENDPOINT + 'Categoria?id=' + id;
+            let httpHeaders = new HttpHeaders({
+                'Content-Type' : 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+     
+            let data = this.httpClient.post(url, {}, options);
+            return data;
+        }
+        postProductos(nodId){
+            const headers = new Headers;
+            const body = JSON.stringify(
+                {
+                  InstId: nodId.toString(),
+                  CodigoBuscar: null,
+                  Eliminado: '0'
+                }
+            );
+            headers.append('Access-Control-Allow-Origin', '*');
+            let url = environment.API_ENDPOINT + 'Productos';
+            let httpHeaders = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            });
+            httpHeaders.set('Access-Control-Allow-Origin', '*');
+            let options = { headers: httpHeaders };
+            let data = this.httpClient.post(url, body, options);
+            
+            return data;
+        }
 
 }
 //creacion de la interface

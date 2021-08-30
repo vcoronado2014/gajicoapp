@@ -1,0 +1,55 @@
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <!-- <a class="navbar-brand" href="#">Carousel</a> -->
+        <a class="navbar-brand" href="#" style="display: inline-flex;">
+            <img src="../../assets/imgs/logo_gajico_1.png" alt="logo" width="267" height="40%"/>
+            <div class="row info-fono">
+                <div class="col-md-3">
+                    <i class="fas fa-2x fa-mobile-alt"></i>
+                </div>
+                <a class="col-md-9 white" href="tel:+56962389235">
+                    ¡Escríbenos! <br>
+                    +56962389235
+                </a>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li [class]="esActivoInicio">
+                    <!-- <a class="nav-link" href="#">Inicio <span class="sr-only">(current)</span></a> -->
+                    <a class="nav-link" [routerLink]="['../home']">Inicio</a>
+                </li>
+                <li [class]="esActivoNosotros">
+                    <a class="nav-link" [routerLink]="['../nosotros']">Nosotros</a>
+                </li>
+                <li [class]="esActivoProductos">
+                    <a class="nav-link" [routerLink]="['../busqueda-articulos']">Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Gases Industriales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Repuestos e Insumos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Servicio Técnico</a>
+                </li>
+                <li [class]="esActivoContacto">
+                    <a class="nav-link" [routerLink]="['../contacto']">Contacto</a>
+                </li>
+                <li class="nav-item d-block d-sm-none">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+            </ul>
+
+            <div class="form-inline mt-2 mt-md-0 d-none d-sm-block">
+                <a href="/login" style="color: white;"><i class="fa fa-users fa-2x text-center margin-icon"></i></a> 
+            </div>
+        </div>
+    </nav>
+</header>

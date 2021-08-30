@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   pre_production: false,
   API_ENDPOINT: '/api/',
+  URL_FOTOS:'http://localhost/WebApi.Gajico/Repositorio/',
   DIRECCION: 'Merced 480 Piso 2, Santiago - Chile',
   TELEFONO:'(+56 2) 2588 8800',
   CONTACTO:'contacto@rayensalud.com',

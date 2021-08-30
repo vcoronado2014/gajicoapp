@@ -1,6 +1,6 @@
 {
     "/api/*": {
-      "target": "http://gajicopre.asambleas.cl/apps",
+      "target": "http://localhost/WebApi.Gajico",
       "secure": false,
       "logLevel": "debug",
       "changeOrigin": true

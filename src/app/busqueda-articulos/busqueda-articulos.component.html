@@ -1,0 +1,127 @@
+<style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+<div class="body">
+    <header-gajico-app [paginaActiva]="'busqueda-articulos'"></header-gajico-app>
+    <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+    <div class="main">
+        <div class="container marketing">
+            <div class="row featurette">
+                <h2 class="featurette-heading pl-2">Productos</h2>
+            </div>
+            
+        </div>
+        <div class="container marketing">
+            <div class="row pt-2">
+                <div class="col-md-3">
+                    <div style="display: flex; cursor: pointer; background-color: #78C2AD;" class="pt-3 pb-3 pl-2 pr-3" (click)="expandir()" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        <h5 style="width: 90%;">Categorias</h5>
+                        <i *ngIf="expandido == false" class="fa fa-plus text-right pt-1" style="width: 10%; cursor: pointer;" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></i>
+                        <i *ngIf="expandido == true" class="fa fa-minus text-right pt-1" style="width: 10%; cursor: pointer;" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></i>
+                    </div>
+                    <div class="collapse show" id="collapseExample">
+                        <div *ngFor="let cat of categorias" class="pl-3">
+                            <div class="list-group list-group-flush">
+                                <div class="form-check list-group-item">
+                                    <input class="form-check-input" type="checkbox" [value]="cat.Seleccionado"
+                                        [id]="'defCheck_' + cat.Id.toString()" (change)="checkCategoria(cat, $event)">
+                                    <label class="form-check-label" [for]="'defCheck_' + cat.Id.toString()">
+                                        {{cat.Nombre}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr *ngIf="textoFiltros && textoFiltros.length > 0">
+                        <div *ngFor="let fil of textoFiltros">
+                            <i class="badge badge-primary">{{fil}}</i>
+                        </div>
+                        <hr *ngIf="textoFiltros && textoFiltros.length > 0">
+
+                        <div *ngIf="textoFiltros && textoFiltros.length > 0">
+                            <button type="button" class="btn btn-secondary btn-sm" (click)="btnLimpiar()">Limpiar</button>
+                            <button type="button" class="btn btn-primary btn-sm float-right" (click)="btnBuscar()">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row pb-2">
+                        <div class="col-9 form-inline">
+                            <div class="form-group" style="width: 100%;">
+                                <label for="exampleBuscar">Buscar</label>
+                                <input type="text" class="form-control ml-2" 
+                                [(ngModel)]="textoBuscar" 
+                                id="exampleBuscar"
+                                (keyup)="buscarTexto()"
+                                placeholder="Buscar" style="width: 90%;">
+                            </div>
+                        </div>
+                        <div class="col-3 form-inline">
+                            <div class="form-group">
+                                <label for="exampleSelect1">Mostrar</label>
+                                <select class="form-control ml-2" id="exampleSelect1" [(ngModel)]="itemsPerPage">
+                                    <option>6</option>
+                                    <option>12</option>
+                                    <option>15</option>
+                                    <option>18</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div *ngFor="let item of articulosFiltrados | paginate: { 
+                                            itemsPerPage: itemsPerPage, 
+                                            currentPage: page, 
+                                            totalItems: totalLength
+                                        }" class="col-md-4 pb-4">
+                            <card-gajico-app [a]="item"></card-gajico-app>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3 form-inline">
+                            <div class="form-group">
+                                <label for="exampleSelect1">Mostrar</label>
+                                <select class="form-control ml-2" id="exampleSelect1" [(ngModel)]="itemsPerPage">
+                                    <option>6</option>
+                                    <option>12</option>
+                                    <option>15</option>
+                                    <option>18</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-9 text-right">
+                            <pagination-controls (pageChange)="page = $event"
+                             class="my-pagination"
+                             responsive="true"
+                             previousLabel=""
+                             nextLabel=""
+                             ></pagination-controls>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+
+            <hr class="pt-4">
+        </div>
+        
+        <footer-gajico-app></footer-gajico-app>
+    </div>
+
+</div>

@@ -15,7 +15,7 @@ import { ServicioLoginService } from './servicios/servicio-login-service';
 import { UtilesService } from './servicios/utiles.service';
 import { GajicoService } from './servicios/gajico.service';
 import { PdfService } from './servicios/pdf.service';
-
+import { ArticulosService } from './servicios/articulos.service';
 //pages
 import { LoginComponent } from './login/login.component';
 import { HeaderAppComponent } from './header-app/header-app.component';
@@ -30,6 +30,15 @@ import { MenuParametrosComponent } from './menu-parametros/menu-parametros.compo
 import { ComprasComponent } from './compras/compras.component';
 import { ArriendoComponent } from './arriendo/arriendo.component';
 import { PrestamoComponent } from './prestamo/prestamo.component';
+import { ArticuloComponent } from './articulo/articulo.component';
+import { HomeGajicoComponent } from './home-gajico/home-gajico.component';
+import { NosotrosGajicoComponent } from './nosotros-gajico/nosotros-gajico.component';
+import { HeaderGajicoComponent } from './header-gajico/header-gajico.component';
+import { FooterGajicoComponent } from './footer-gajico/footer-gajico.component';
+import { ContactoGajicoComponent } from './contacto-gajico/contacto-gajico.component';
+import { VistaArticulosComponent } from './vista-articulos/vista-articulos.component';
+import { CardGajicoComponent } from './card-gajico/card-gajico.component';
+import { BusquedaArticulosComponent } from './busqueda-articulos/busqueda-articulos.component';
 //plugin
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -45,6 +54,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material';
 import {CdkTableModule} from '@angular/cdk/table';
 import { Ng2CompleterModule } from "ng2-completer";
+import { AngularFileUploaderModule } from "angular-file-uploader";
+import { NgxPaginationModule } from 'ngx-pagination';
 //pipes
 import { CurrencyFormat } from './pipes/CurrencyFormat';
 import { FilterPipe } from './pipes/filter'
@@ -66,6 +77,15 @@ import { FilterPipe } from './pipes/filter'
     ComprasComponent,
     ArriendoComponent,
     PrestamoComponent,
+    ArticuloComponent,
+    HomeGajicoComponent,
+    NosotrosGajicoComponent,
+    HeaderGajicoComponent,
+    FooterGajicoComponent,
+    ContactoGajicoComponent,
+    VistaArticulosComponent,
+    CardGajicoComponent,
+    BusquedaArticulosComponent,
     CurrencyFormat,
     FilterPipe,
   ],
@@ -90,6 +110,8 @@ import { FilterPipe } from './pipes/filter'
     MatFormFieldModule,
     MatNativeDateModule,
     MatTabsModule,
+    AngularFileUploaderModule,
+    NgxPaginationModule,
     BrowserAnimationsModule, ToastrModule.forRoot(), NgxLoadingModule.forRoot({}),NgxMaskModule.forRoot()
   ],
   providers: [
@@ -99,6 +121,7 @@ import { FilterPipe } from './pipes/filter'
     UtilesService,
     GajicoService,
     PdfService,
+    ArticulosService,
   ],
   bootstrap: [AppComponent]
 })

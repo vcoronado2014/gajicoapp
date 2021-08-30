@@ -78,4 +78,12 @@ export class InicioComponent implements OnInit {
       }
     )
   }
+  abrirArriendos(){
+    this.router.navigateByUrl('/arriendos')
+    .then(data => console.log(data),
+      error =>{
+        console.log(error);
+      }
+    )
+  }
 }

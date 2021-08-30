@@ -22,6 +22,7 @@
               <th>Nombre</th>
               <th>Valor</th>
               <th>Stock</th>
+              <th>Imagen</th>
               <th></th>
             </tr>
           </thead>
@@ -32,8 +33,8 @@
               <td>{{ person.NomProduc }}</td>
               <td>{{ person.ValProduc }}</td>
               <td>{{ person.StoProduc }}</td>
+              <td><i *ngIf="person.Articulo != null && person.Articulo.Id > 0" class="fa fa-images text-center margin-icon"></i></td>
               <td>
-
                 <button style="float: right;" *ngIf="person.Eliminado == 0" type="button" class="btn btn-danger" data-toggle="modal"
                     data-target="#exampleModalCenter" (click)="seleccionar(person)">
                     <i title="Desactivar" class="fas fa-window-close"></i>
@@ -44,6 +45,8 @@
                 </button>                
                 <button style="float: right; margin-right: 5px;" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEdicion"
                     (click)="editar(person)">Editar</button>
+                <button style="float: right; margin-right: 5px;" type="button" class="btn btn-dark" 
+                   (click)="irArticulo(person)">Editar foto</button>
               </td>
             </tr>
           </tbody>

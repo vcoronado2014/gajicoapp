@@ -12,9 +12,19 @@ import { ProductosComponent } from './productos/productos.component';
 import { MenuParametrosComponent } from './menu-parametros/menu-parametros.component';
 import { ComprasComponent } from './compras/compras.component';
 import { PrestamoComponent } from './prestamo/prestamo.component';
+import { ArriendoComponent } from './arriendo/arriendo.component';
+import { ArticuloComponent } from './articulo/articulo.component';
+import { HomeGajicoComponent } from './home-gajico/home-gajico.component';
+import { BusquedaArticulosComponent } from './busqueda-articulos/busqueda-articulos.component';
+import { NosotrosGajicoComponent } from './nosotros-gajico/nosotros-gajico.component';
+import { ContactoGajicoComponent } from './contacto-gajico/contacto-gajico.component';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
+  { path: '', component: HomeGajicoComponent },
+  { path: 'home', component: HomeGajicoComponent },
+  { path: 'nosotros', component: NosotrosGajicoComponent },
+  { path: 'busqueda-articulos', component: BusquedaArticulosComponent },
+  { path: 'contacto', component: ContactoGajicoComponent },
   { path: 'inicio', component: InicioComponent },
   { path: 'login', component: LoginComponent },
   { path: 'clientes', component: ClientesComponent },
@@ -26,6 +36,8 @@ const routes: Routes = [
   { path: 'parametros', component: MenuParametrosComponent },
   { path: 'compras', component: ComprasComponent },
   { path: 'prestamos', component: PrestamoComponent },
+  { path: 'arriendos', component: ArriendoComponent },
+  { path: 'articulo', component: ArticuloComponent },
 ];
 
 @NgModule({

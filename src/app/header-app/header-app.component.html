@@ -25,17 +25,19 @@
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" [routerLink]="['../proveedores']">Proveedores</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" [routerLink]="['../inicio']">Arriendos</a>
+              <a class="dropdown-item" [routerLink]="['../prestamos']">Préstamos</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" [routerLink]="['../arriendos']">Arriendos</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" [routerLink]="['../productos']">Productos</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" [routerLink]="['../parametros']">Configuraciones</a>
             </div>
           </li>
-          <li class="nav-item" [routerLink]="['../inicio']">
+          <li class="nav-item" [routerLink]="['../inicio']" style="cursor: pointer;">
             <a class="nav-link">Inicio</a>
           </li>
-          <li class="nav-item" (click)="salir()">
+          <li class="nav-item" (click)="salir()" style="cursor: pointer;">
             <a class="nav-link">Salir</a>
           </li>
           <!--

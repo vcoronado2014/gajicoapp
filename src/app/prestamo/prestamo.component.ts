@@ -274,7 +274,7 @@ export class PrestamoComponent implements OnInit, OnDestroy {
 
         this.forma = new FormGroup({
             'nuevoCodigo': new FormControl('', [Validators.required, Validators.minLength(3)]),
-            'nuevoNombre': new FormControl(''),
+            'nuevoNombre': new FormControl({value: '', disabled: true}),
             'nuevoEstado': new FormControl(0, Validators.required),
             'nuevoLleno': new FormControl(0, Validators.required),
             'nuevoFecha': new FormControl(this.utiles.retornaFechaFormateada(moment()), Validators.required),
@@ -475,6 +475,11 @@ export class PrestamoComponent implements OnInit, OnDestroy {
                     this.loading = false;
                     console.log(this.prestamos);
                     //this.showToast('success', 'Correcto', 'Recuperado');
+                }
+                else{
+                    this.prestamos = [];
+                    this.dtTrigger.next();
+                    this.loading = false;
                 }
             },
             err => {

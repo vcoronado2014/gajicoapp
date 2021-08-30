@@ -1,0 +1,150 @@
+<app-header-app></app-header-app>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+<section class="container-app">
+    <div class="d-flex w-100 justify-content-between breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">MENU</li>
+            <li class="breadcrumb-item active" aria-current="page">Productos/Articulo</li>
+        </ol>
+        <button type="button" class="btn btn-sm btn-primary" (click)="volver()">Volver</button>
+    </div>
+
+<div class="row" style="padding:2%; width: 100%;">
+    <div class="col-sm-12">
+        <h2>{{producto.NomProduc}}</h2>
+        <form [formGroup]="forma" style="width: 100%;">
+            <div class="form-row mb-3">
+                <div class="input-group-md col-md-9">
+                    <!-- primera fila-->
+                    <div class="form-row mb-3">
+                        <div class="input-group-md col-md-4">
+                            <label for="inputTitulo">Titulo del producto</label>
+                            <input type="text" class="form-control" id="inputTitulo" placeholder="Titulo" formControlName="nuevoTitulo" maxlength="200">
+                        </div>
+                        <div class="input-group-md col-md-8">
+                            <label for="inputContenido">Descripción del Producto</label>
+                            <textarea class="form-control" id="inputContenido" placeholder="Descripción"
+                                formControlName="nuevoContenido" maxlength="500" rows="2"></textarea>
+                           
+                        </div>
+                    </div>
+                    <!-- segunda fila-->
+                    <div class="form-row mb-3">
+                        <div class="input-group-md col-md-3">
+                            <label for="inputPrecioAnterior">Precio anterior</label>
+                            <input type="number" class="form-control" id="inputPrecioAnterior" placeholder="0"
+                                formControlName="nuevoPrecioAnterior" maxlength="10">
+                        </div>
+                        <div class="input-group-md col-md-3">
+                            <label for="inputPrecioActual">Precio Actual</label>
+                            <input type="number" class="form-control" id="inputPrecioActual" placeholder="0"
+                                formControlName="nuevoPrecioActual" maxlength="10">
+                        </div>
+                        <div class="input-group-md col-md-6">
+                            <label for="inputCategoria">Seleccione categoria</label>
+                            <select class="custom-select" class="form-control" id="inputCategoria"
+                                formControlName="nuevoIdCategoria">
+                                <option *ngFor="let c of categorias;" [value]="c.Id">{{c.Nombre}}</option>
+                            </select>
+                            <div class="pt-2">
+                                <button style="float: right; margin-right: 5px;" type="button" class="btn btn-dark btn-sm"
+                                (click)="agregarCategoria()">Nueva categoria</button>
+                            <button style="float: right; margin-right: 5px;" type="button" class="btn btn-warning btn-sm"
+                                (click)="quitarCategoria(forma.controls.nuevoIdCategoria.value)">Eliminar categoria seleccionada</button>
+                            </div>
+                        </div>
+                        <!-- <div class="input-group-md col-md-2">
+                            <button style="float: right; margin-right: 5px;" type="button" class="btn btn-dark btn-sm"
+                                (click)="agregarCategoria()">Nueva categoria</button>
+                            <button style="float: right; margin-right: 5px;" type="button" class="btn btn-warning btn-sm"
+                                (click)="agregarCategoria()">Eliminar categoria seleccionada</button>
+                        </div> -->
+
+                    </div>
+                    <!-- quede aca, agregando los demas elementos para mostrar los artiiculos-->
+                    <div class="form-row mb-3">
+                        <div class="input-group-md col-md-6">
+                            <div class="alert alert-secondary" role="alert">
+                                <small>
+                                    Si desea subir una foto para este artículo, primero debe presionar en el botón "Seleccione imagen", se abrirá la
+                                    ventana para
+                                    que pueda seleccionar el archivo desde su computador, se aceptan sólo archivos de imagen (extensión jpg, png,
+                                    jpeg), con
+                                    un tamaño no mayor a 3MB, una vez seleccionada su imagen y sus campos rellenados presione el botón
+                                    "Guardar".
+                                </small>
+                            
+                            </div>
+                            <!-- <label for="formFileDisabled" class="form-label">Seleccione su archivo</label> -->
+                            <angular-file-uploader [config]="afuConfig" #fileUpload1 (change)="loadFile($event)">
+                            </angular-file-uploader>
+                        </div>
+                        <div class="input-group-md col-md-6 text-center" [hidden]="!estaEditando">
+                            <img [src]="archivoImagen" class="d-block" alt="icono"
+                                style="max-height: 200px;margin-left: auto;margin-right: auto;">
+                            <span>Nombre archivo: <strong>{{nombreArchivo}}</strong></span>
+                        </div>
+<!--                         <div>
+                            <img [src]="imgURL" *ngIf="imgURL" class="d-block" alt="icono"
+                                style="max-height: 200px;margin-left: auto;margin-right: auto;">
+                        </div> -->
+                        
+                
+                    </div>
+                    <hr>
+                    <div class="form-row mt-3">
+                        <div class="form-group col" *ngIf="idArticulo > 0">
+                            <button type="button" class="btn btn-outline-dark btn-lg" (click)="eliminar()">Eliminar este artículo de mi lista</button>
+                        </div>
+                        <div class="form-group col text-right">
+                            <input type="submit" class="btn btn-secondary btn-lg" value="Guardar" (click)="onSubmit()"
+                                [disabled]="loading">
+                        </div>
+                
+                    </div>
+                </div>
+                <div class="input-group-md col-md-3 text-center">
+                    <h5>Así se verá en tu página</h5>
+                    <div class="card" style="width: 18rem; min-height: 300px;margin-left: auto;
+                    margin-right: auto;">
+                        <img [src]="archivoImagen" class="d-block card-img-top" alt="icono" *ngIf="!imgURL">
+                        <img [src]="imgURL" *ngIf="imgURL" class="d-block card-img-top" alt="icono">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: .9375rem;
+                                      font-weight: 400;
+                                      line-height: 1.35;
+                                      letter-spacing: -.01em;
+                                      margin-bottom: .45rem;">{{forma.controls.nuevoTitulo.value}}</h5>
+                            <p class="card-text">{{forma.controls.nuevoContenido.value}}</p>
+                            <div *ngIf="forma.controls.nuevoPrecioActual.value == forma.controls.nuevoPrecioAnterior.value">
+                                <span class="text-center price">{{ forma.controls.nuevoPrecioActual.value | currency : 'CLP' :'symbol-narrow':'3.0' | currencyFormat }}</span>
+                                <small> + IVA</small>
+                            </div>
+                            <div *ngIf="forma.controls.nuevoPrecioActual.value != forma.controls.nuevoPrecioAnterior.value">
+                                <div class="row" style="padding-left: 16px;">
+                                    <del>
+                                        <span class="text-center price">Antes {{ forma.controls.nuevoPrecioAnterior.value | currency : 'CLP'
+                                            :'symbol-narrow':'3.0' | currencyFormat }}</span>
+                                        <small> + IVA</small>
+                                    </del>
+                                    
+                                </div>
+                                <div class="row content" style="padding-left: 16px;">
+                                    <span class="text-center price">Ahora {{ forma.controls.nuevoPrecioActual.value | currency : 'CLP' :'symbol-narrow':'3.0' | currencyFormat }}</span>
+                                    <small> + IVA</small>
+                                </div>
+                                
+                            </div>
+
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </form>
+    </div>
+
+
+</div>
+
+</section>

@@ -1,4 +1,188 @@
+<app-header-app></app-header-app>
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
 <section class="container-app">
-{{this.listaArriendos.length}}
-</section>
+    <!--contenido informativo antes de la lista de usuarios -->
+  
+        <div class="d-flex w-100 justify-content-between breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">MENU</li>
+                <li class="breadcrumb-item active" aria-current="page">Arriendos</li>
+            </ol>
+            <button type="button" class="btn btn-sm btn-primary" *ngIf="(rolIdLogueado == 1 || rolIdLogueado == 2) && this.clienteEncontrado" data-toggle="modal" data-target="#exampleModalCenterD" (click)="crear()">Nuevo Arriendo</button>
+        </div>
+        <div class="grid" style="padding: 20px;">
+          <div class="jumbotron jumbotron-fluid" style="padding: 1rem;">
+            <div class="container">
+              <!--<h1 class="display-5">Búsqueda</h1>-->
+              <div class="row">
+                <div class="col-xs-12 col-md-5">
+                  <legend>Búsqueda, ingresa el rut y dígito verificador y luego presiona el botón Buscar</legend>
+                  <div class="form-group col-xs-12" style="display: flex;">
+                    <label for="rutFormLabel" class="col-md-2 col-form-label">Rut Cliente</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control" id="rutFormLabel" placeholder="Rut" name="rut"
+                        [(ngModel)]="rutBuscar">
+                    </div>
+                    <div class="col-md-2">
+                      <input type="text" class="form-control" id="dvFormLabel" placeholder="Dv" name="dv"
+                        [(ngModel)]="dvBuscar">
+                    </div>
+                  </div>
+                  <div class="col-xs-12 text-right">
+                    <button type="button" class="btn btn-secondary" (click)="limpiarGrilla()"
+                      style="margin-right: 10px;">Limpiar</button>
+                    <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-md-7">
+                  <!-- info cliente -->
+                  <div class="form-row" *ngIf="this.clienteEncontrado">
+                    <legend>Información del Cliente</legend>
+                    <div class="form-group col-xs-12 col-md-4">
+                      <label for="inputEmail4">Nombre</label>
+                      <input type="text" class="form-control" id="inputEmail4" disabled
+                        value="{{this.clienteEncontrado.NomClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-3">
+                      <label for="inputEmail5">Giro</label>
+                      <input type="text" class="form-control" id="inputEmail5" disabled
+                        value="{{this.clienteEncontrado.GirClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-3">
+                      <label for="inputEmail6">Correo</label>
+                      <input type="text" class="form-control" id="inputEmail6" disabled
+                        value="{{this.clienteEncontrado.CorreoClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-2">
+                      <label for="inputEmail7">Teléfono</label>
+                      <input type="text" class="form-control" id="inputEmail7" disabled
+                        value="{{this.clienteEncontrado.TelClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-3">
+                      <label for="inputEmail8">Ciudad</label>
+                      <input type="text" class="form-control" id="inputEmail8" disabled
+                        value="{{this.clienteEncontrado.CiuClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-3">
+                      <label for="inputEmail9">Comuna</label>
+                      <input type="text" class="form-control" id="inputEmail9" disabled
+                        value="{{this.clienteEncontrado.ComClient}}">
+                    </div>
+                    <div class="form-group col-xs-12 col-md-6">
+                      <label for="inputEmail10">Dirección</label>
+                      <input type="text" class="form-control" id="inputEmail10" disabled
+                        value="{{this.clienteEncontrado.DirClient}}">
+                    </div>
+                  </div>
+                </div>
+        
+              </div>
+        
+            </div>
+          </div>
+        
+          <div class="grid" style="padding: 20px;">
+            <!--tabla de resultados -->
+            <table id="tabla1" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover"
+              style="width:100%">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre Producto</th>
+                  <th>Código</th>
+                  <th>Factura</th>
+                  <th>Fecha arriendo</th>
+                  <th>Cantidad</th>
+                  <th>Valor</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let arr of arriendos">
+                  <td>{{ arr.Id }}</td>
+                  <td>{{ arr.Nombre }}</td>
+                  <td>{{ arr.ProArrien }}</td>
+                  <td>{{ arr.FacArrien }}</td>
+                  <td>{{ arr.FecArrien }}</td>
+                  <td>{{ arr.CanArrien }}</td>
+                  <td>{{ arr.ValArrien }}</td>
+                  <td>0</td>
+                  <td>
+                    <button *ngIf="arr.Eliminado == 0" type="button" class="btn btn-link"
+                      (click)="quitarArriendo(arr)">Eliminar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        
+          </div>
+        
+        </div>
+  <!-- modal agregar -->
+  <div class="modal fade" id="exampleModalCenterD" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Agregar</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- contenido del modal agregar -->
+          <form [formGroup]="forma">
+            <div class="form-row mb-3">
+              <!-- codigo -->
+              <div class="input-group-md col-md-4">
+                <label for="inputCodigo">Código</label>
+                <input class="form-control" id="inputCodigo" list="listaCodigosProd" formControlName="nuevoCodigo" name="listaCodigos"
+                  (focusout)="keyDowEnterProducto($event, 1)" (keydown)="this.utiles.UpperCaseF($event)" />
+                <datalist id="listaCodigosProd">
+                  <option *ngFor="let item of listaCodigosProd" [value]="item.Nombre">{{item.Nombre}}</option>
+                </datalist>
+              </div>
+              <div class="input-group-md col-md-8">
+                <label for="inputNombre">Nombre Producto *</label>
+                <input type="text" class="form-control" id="inputNombre" placeholder="Nombres"
+                  formControlName="nuevoNombre" (keydown)="this.utiles.UpperCaseF($event)" maxlength="200" disabled>
+              </div>
+              <!-- nro factura -->
+              <div class="input-group-md col-md-4">
+                <label for="inputNroFactura">Nro. Factura</label>
+                <input type="number" class="form-control" id="inputNroFactura" formControlName="nuevoNumeroFactura" />
+              </div>
+              <!-- FECHA -->
+              <div class="input-group-md col-md-4">
+                <label for="inputFecha">Fecha *</label>
+                <input type="text" matInput mask="00/00/0000" class="form-control" id="inputFecha" formControlName="nuevoFecha" />
+              </div>
+              <!-- cantidad -->
+              <div class="input-group-md col-md-2">
+                <label for="inputCantidad">Cantidad * (> 0)</label>
+                <input type="number" class="form-control" id="inputCantidad" formControlName="nuevoCantidad" />
+              </div>
+              <!-- valor -->
+              <div class="input-group-md col-md-2">
+                <label for="inputValor">Valor * (> 0)</label>
+                <input type="number" class="form-control" id="inputValor" formControlName="nuevoValor" />
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right: 5px;">Cerrar</button>
+          <button type="button" class="btn btn-primary" (click)="this.guardar()">Agregar!</button>
+  
+        </div>
+  
+      </div>
+    </div>
+  
+  </div>
+  
+        
+  
+  </section>

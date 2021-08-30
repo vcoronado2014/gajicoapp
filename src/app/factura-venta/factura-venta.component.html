@@ -233,16 +233,19 @@
                 <!-- NOMBRE DETALLE -->
                 <div class="input-group-md col-md-3">
                     <label for="inputNombreDetalle">Nombre Producto</label>
-<!--                     <input class="form-control" id="inputNombreDetalle" list="listaNombresProd" formControlName="nuevoNombreDetalle" name="listaNombresProd"
-                        (focusout)="keyDowEnterProducto($event, 2)" (keydown)="this.utiles.UpperCaseF($event)" />
-                    <datalist id="listaNombresProd">
-                        <option *ngFor="let item of listaNombresProd" [value]="item.Nombre">{{item.Nombre}}</option>
-                    </datalist> -->
                     <input type="text" class="form-control" id="inputNombreDetalle" formControlName="nuevoNombreDetalle" maxlength="200" 
                     (focusout)="keyDowEnterNombreProd($event)"
                     (keydown)="this.utiles.UpperCaseF($event)">
                 </div>
                 <!-- detalle tiene arriendo -->
+                <div class="input-group-md col-md-4" *ngIf="this.detalleTieneArriendo">
+                    <label for="inlineFormSelectDias">Producto en arriendo</label>
+                    <input class="form-control" id="inputCodigoArriendo" list="listaCodigosArriendo" formControlName="nuevoCodigoArriendo"
+                        name="listaCodigosArriendo" (keydown)="this.utiles.UpperCaseF($event)" />
+                    <datalist id="listaCodigosArriendo">
+                        <option *ngFor="let item of listaCodigosArriendo" [value]="item.Nombre">{{item.Nombre}}</option>
+                    </datalist>
+                </div>
                 <div class="input-group-md col-md-2" *ngIf="this.detalleTieneArriendo">
                     <label for="inlineFormSelectDias">Días</label>
                     <div class="input-group">
@@ -261,12 +264,6 @@
                     <div class="input-group">
                         <input type="number" class="form-control" id="inlineFormInputGroupStock" formControlName="nuevoStock"
                         min="0" max="1000000">
-<!--                         <div *ngIf="!modificaStock" class="input-group-prepend" style="cursor: pointer;">
-                            <div class="input-group-text" (click)="modificarNumeroFactura()">Modificar</div>
-                        </div>
-                        <div *ngIf="modificaStock" class="input-group-prepend" style="cursor: pointer;">
-                            <div class="input-group-text" (click)="guardaNumeroFactura()">Guardar</div>
-                        </div> -->
                     </div>
                 </div>
                 <!-- VALOR -->

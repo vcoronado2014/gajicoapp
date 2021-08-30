@@ -1,8 +1,9 @@
 export const environment = {
   production: true,
-  pre_production: false,
+  pre_production: true,
   //API_ENDPOINT: "https://www.asambleas.cl/apps_gaj/api/",
   API_ENDPOINT: '/apps/api/',
+  URL_FOTOS:'http://gajico.asambleas.cl/apps/Repositorio/',
   DIRECCION: 'Merced 480 Piso 2, Santiago - Chile',
   TELEFONO:'(+56 2) 2588 8800',
   CONTACTO:'contacto@rayensalud.com',
