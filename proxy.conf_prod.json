@@ -1,6 +1,6 @@
 {
     "/api/*": {
-      "target": "http://gajico.asambleas.cl/apps",
+      "target": "http://www.gajico.cl/apps",
       "secure": false,
       "logLevel": "debug",
       "changeOrigin": true
